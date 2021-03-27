@@ -2,21 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var AccountSchema = new Schema({
-    
-    name: {type: String, unique: true},
+    username:               {type: String, required: true, unique: true},
+    passHash:               {type: String, required: true},
+    publicKey:              {type: Object, required: true},
+    encryptedPrivateKey:    {type: Object, required: true}
 
 },{strict:false});
 
 module.exports = mongoose.model('Account', AccountSchema);
-
-
-// var mongoose = require('mongoose');
-// var Schema = mongoose.Schema;
-
-// var BookSchema = new Schema({
-//   title: String,
-//   author: String,
-//   category: String
-// },{ strict: false });
-
-// module.exports = mongoose.model('Book', BookSchema);

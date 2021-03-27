@@ -16,6 +16,16 @@ class Account{
     getEncryptedPrivateKey(){
         return this.encryptedPrivateKey
     }
+
+    // getPrivateKey(password)
+    // {
+    //     if(this.passHash == sha256(password))
+    //     {
+    //         return symmetricDecryption(this.encryptedPrivateKey,password);
+    //     }
+    //     else 
+    //         return false;
+    // }
     
 }
 

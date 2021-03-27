@@ -1,8 +1,7 @@
 const crypto = require("crypto")
 const NodeRSA = require('node-rsa')
 var sha256 = require('js-sha256')
-// const sshpk = require('sshpk');
-const window = require("window")
+
 
 
 class CryptoSecurity{
