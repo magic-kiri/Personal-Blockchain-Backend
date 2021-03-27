@@ -13,15 +13,8 @@ function signUp(username,password)
     const {privateKey, publicKey} = cryptoSecurity.getKey(password)
     
     let encryptedPrivateKey = cryptoSecurity.symmetricEncryption(privateKey,password)
-    // let decryptedPrivateKey = cryptoSecurity.symmetricDecryption(encryptedPrivateKey,password)   
-    
-    // let text = "ami valo pola"
-    // let cyph = cryptoSecurity.encryption(text,publicKey)
-    // let ret = cryptoSecurity.decryption(cyph,decryptedPrivateKey,password)
-    // console.log(Buffer.from(ret).toString('utf-8'))
-
     let account = new Account(username,password,publicKey,encryptedPrivateKey)
-
+    
     // console.log(account)
 
 }

@@ -45,12 +45,12 @@ app.get('/accounts/:id', function(req, res) {
 
 
 app.post('/account', function(req, res) {
-
+  let account = req.body
     let essential_keys = ['username','passHash','publicKey','encryptedPrivateKey']
     for(let key of essential_keys)
-        if(req.body[key] === undefined)
-            return res.send(`Opps! ${key} is missing!`)
-
+        if(account[key] === undefined)
+            return res.send(`Opps! (${key}) is missing!`)
+    
     Account.create(account, function(err, account) {
       if(err) {
         res.send('error saving account');
@@ -61,9 +61,13 @@ app.post('/account', function(req, res) {
     });
 });
 
+
 app.listen(port, function() {
   console.log('app listening on port ' + port);
 });
+
+
+module.exports = {port}
 
 /*
 

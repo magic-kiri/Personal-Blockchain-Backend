@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var AccountSchema = new Schema({
     
-    name: String,   
+    name: {type: String, unique: true},
 
 },{strict:false});
 
