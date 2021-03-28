@@ -47,23 +47,15 @@ async function cmp()
     console.log(await isPortReachable( dbPort,{host: '192.168.1.105'}));
     //=> true
 })();
-
-
-findDevice().then(devices => {
-    // console.log(devices)
-    for(node of devices)
-    {
-        isPortReachable( dbPort,{host: node.ip}).then((res)=>{
-            if(res)
-                console.log(node.ip)
-        }) 
-    }
-    /*
-    [
-      { name: '?', ip: '192.168.0.10', mac: '...' },
-      { name: '...', ip: '192.168.0.17', mac: '...' },
-      { name: '...', ip: '192.168.0.21', mac: '...' },
-      { name: '...', ip: '192.168.0.22', mac: '...' }
-    ]
-    */
-  })
+let c= 0;
+setInterval(function(){findDevice().then(devices => {
+    console.log(devices)
+    console.log(c++)
+    // for(node of devices)
+    // {
+    //     isPortReachable( dbPort,{host: node.ip}).then((res)=>{
+    //         if(res)
+    //             console.log(node.ip)
+    //     }) 
+    // }
+  }) }, 3000);
