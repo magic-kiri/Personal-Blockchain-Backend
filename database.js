@@ -25,7 +25,7 @@ app.get('/accounts', function(req, res) {
 });
 
 
-app.get('/accounts/:username', function(req, res) {
+app.get('/account/:username', function(req, res) {
     Account.findOne({
       username: req.params.username
       })
@@ -52,7 +52,7 @@ app.get('/accounts/:username', function(req, res) {
 
 
 app.listen(port, function() {
-  console.log('app listening on port ' + port);
+  console.log('Database sarver listening on port: ' + port);
 });
 
 
