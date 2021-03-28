@@ -11,9 +11,8 @@ const dbPort = 8080
 async function signUp(username, password) {
     const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
     const ret = await response.text()
-
     if (ret != 'null')
-        return { status: "Already exist an account with this username" }
+        return { status: "Already exist an account with this username"}
     let cryptoSecurity = new CryptoSecurity()
     const { privateKey, publicKey } = cryptoSecurity.getKey(password)
 
@@ -23,21 +22,22 @@ async function signUp(username, password) {
 
     // This portion use POST method to store an account to the database. 
     // Unhandled promise rejection... Warning
-    const res = await fetch(`http://localhost:${dbPort}}/account`, {
+    // console.log(`http://localhost:${dbPort}/account`)
+    const res = await fetch(`http://localhost:${dbPort}/account`, {
         method: 'POST',
         body: JSON.stringify(account),
         headers: { 'Content-Type': 'application/json' }
     })
 
     return { status: "Account has been created", Account: account }
-
 }
 
 async function cmp() {
-    let node1 = await signUp("noqwasdasfascde1", "pass1")
+    let node1 = await signUp("ntaoe1", "pass1")
     console.log(node1.status)
 
 }
+cmp()
 
 async function discoverAdjacentNode() {
     let adjacentNode = []
