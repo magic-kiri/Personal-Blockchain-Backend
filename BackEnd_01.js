@@ -1,10 +1,9 @@
 
-
+const findDevice = require('local-devices');
 const {CryptoSecurity} = require("./security")
-var sha256 = require('js-sha256')
 const {Account} = require("./account")
 const fetch = require('node-fetch');
-
+const isPortReachable = require('is-port-reachable');
 
 const dbPort = 8080
 
@@ -42,8 +41,29 @@ async function cmp()
     
 }
 
-cmp()
+
+ 
+(async () => {
+    console.log(await isPortReachable( dbPort,{host: '192.168.1.105'}));
+    //=> true
+})();
 
 
-
-
+findDevice().then(devices => {
+    // console.log(devices)
+    for(node of devices)
+    {
+        isPortReachable( dbPort,{host: node.ip}).then((res)=>{
+            if(res)
+                console.log(node.ip)
+        }) 
+    }
+    /*
+    [
+      { name: '?', ip: '192.168.0.10', mac: '...' },
+      { name: '...', ip: '192.168.0.17', mac: '...' },
+      { name: '...', ip: '192.168.0.21', mac: '...' },
+      { name: '...', ip: '192.168.0.22', mac: '...' }
+    ]
+    */
+  })
