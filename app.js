@@ -8,15 +8,11 @@ var http = require('http');
 
 var urlencoded = require('url');
 var sha256 = require('js-sha256')
-// import Blockchain from './Blockchain'
+
 var Blockchain = require('./Blockchain')
 var routes = require('./routes')
-
-// var nano = require('nano')('http://localhost:3000');
-
-// var db = nano.use('books');
 var app = express();
-console.log("hsp");
+
 app.set('port', 4000);
 
 // CREATED A BLOCKCHAIN 
@@ -28,9 +24,9 @@ app.use(express.json());
 
 // app.use(express.static(path.join(__dirname, 'public')));
 
-// app.get('/', function(req,res){
-//     console.log("nais");
-// });
+app.get('/', function(req,res){
+    res.send("Welcome to Personal Blockchain!");
+});
 
 var blockchain = new Blockchain() 
 
