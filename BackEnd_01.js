@@ -12,7 +12,7 @@ async function signUp(username, password) {
     const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
     const ret = await response.text()
     if (ret != 'null')
-        return { status: "Already exist an account with this username"}
+        return { status: "Already exist an account with this username" }
     let cryptoSecurity = new CryptoSecurity()
     const { privateKey, publicKey } = cryptoSecurity.getKey(password)
 
@@ -37,18 +37,25 @@ async function cmp() {
     console.log(node1.status)
 
 }
-cmp()
+// cmp();
 
 async function discoverAdjacentNode() {
     let adjacentNode = []
     await findDevice().then(async (devices) => {
         for (node of devices)
-            if (true || (await isPortReachable(dbPort, { host: node.ip }))) {
+            if ((await isPortReachable(4000, { host: node.ip }))) {
                 console.log(node.ip)
                 adjacentNode.push(node.ip)
             }
     })
     return adjacentNode
 }
+
+(async () => {
+    console.log(await isPortReachable(80, { host: 'google.com' }));
+    //=> true
+})();
+
+
 
 discoverAdjacentNode().then(res => console.log(res))
