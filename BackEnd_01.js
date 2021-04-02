@@ -9,10 +9,16 @@ const dbPort = 8080
 
 // This function returns an account. It also creates an instance in DB
 async function signUp(username, password) {
-    const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
-    const ret = await response.text()
-    if (ret != 'null')
-        return { status: "Already exist an account with this username"}
+
+    try {
+        const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
+        const ret = await response.text()
+        if (ret != 'null')
+            return { status: "Already exist an account with this username" }
+    } catch (err) {
+        return { status: "No such server", error: err }
+    }
+
     let cryptoSecurity = new CryptoSecurity()
     const { privateKey, publicKey } = cryptoSecurity.getKey(password)
 
@@ -22,12 +28,16 @@ async function signUp(username, password) {
 
     // This portion use POST method to store an account to the database. 
     // Unhandled promise rejection... Warning
-    // console.log(`http://localhost:${dbPort}/account`)
-    const res = await fetch(`http://localhost:${dbPort}/account`, {
-        method: 'POST',
-        body: JSON.stringify(account),
-        headers: { 'Content-Type': 'application/json' }
-    })
+    try {
+        const res = await fetch(`http://localhost:${dbPort}/account`, {
+            method: 'POST',
+            body: JSON.stringify(account),
+            headers: { 'Content-Type': 'application/json' }
+        })
+    }
+    catch (err) {
+        return { status: "Couldn't create any account!", error: err }
+    }
 
     return { status: "Account has been created", Account: account }
 }
@@ -37,18 +47,20 @@ async function cmp() {
     console.log(node1.status)
 
 }
-cmp()
+cmp();
 
 async function discoverAdjacentNode() {
     let adjacentNode = []
     await findDevice().then(async (devices) => {
-        for (node of devices)
-            if (true || (await isPortReachable(dbPort, { host: node.ip }))) {
-                console.log(node.ip)
+        for (node of devices) {
+            if ((await isPortReachable(dbPort, { host: node.ip }))) {
+                // console.log(node.ip)
                 adjacentNode.push(node.ip)
             }
+        }
     })
     return adjacentNode
 }
+
 
 discoverAdjacentNode().then(res => console.log(res))
