@@ -4,7 +4,6 @@ const { CryptoSecurity } = require("./security")
 const { Account } = require("./account")
 const fetch = require('node-fetch');
 const isPortReachable = require('is-port-reachable');
-
 const dbPort = 8080
 
 // This function returns an account. It also creates an instance in DB
@@ -49,6 +48,8 @@ async function cmp() {
 }
 cmp();
 
+
+// Node Discovery:::
 async function discoverAdjacentNode() {
     let adjacentNode = []
     await findDevice().then(async (devices) => {
@@ -63,4 +64,4 @@ async function discoverAdjacentNode() {
 }
 
 
-discoverAdjacentNode().then(res => console.log(res))
+// discoverAdjacentNode().then(res => console.log(res))
