@@ -4,6 +4,7 @@
 const fetch = require('node-fetch');
 
 var adjacentNode = new Set()
+// This is a list where we will knock to fetch data...
 var addressList = []
 for (i = 100; i < 110; i++)
     addressList.push(`192.168.0.${i}`)
@@ -29,7 +30,7 @@ async function discoverAdjacentNode() {
 
 }
 
-setInterval(function () { discoverAdjacentNode() }, 20 * 1000);
+setInterval(function () { discoverAdjacentNode() }, 30 * 1000);
 discoverAdjacentNode()
 
 module.exports = { adjacentNode };

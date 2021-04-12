@@ -3,6 +3,7 @@
 const { CryptoSecurity } = require("./security")
 const { Account } = require("./account")
 const fetch = require('node-fetch');
+const { sha256 } = require("js-sha256");
 const dbPort = 8080
 
 // This function returns an account. It also creates an instance in DB
@@ -11,10 +12,12 @@ async function signUp(username, password) {
     try {
         const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
         const ret = await response.text()
-        if (ret != 'null')
-            return { status: "Already exist an account with this username" }
+        let arr = JSON.parse(ret)
+        if (arr.length)
+            return "Already exist an account with this username"
     } catch (err) {
-        return { status: "No such server", error: err }
+        // console.log("jhamela")
+        return "No such server"
     }
 
     let cryptoSecurity = new CryptoSecurity()
@@ -23,7 +26,7 @@ async function signUp(username, password) {
     let encryptedPrivateKey = cryptoSecurity.symmetricEncryption(privateKey, password)
     // Creating a new Account
     let account = new Account(username, password, publicKey, encryptedPrivateKey)
-
+    console.log("account has permission to signup")
     // This portion use POST method to store an account to the database. 
     // Unhandled promise rejection... Warning
     try {
@@ -32,37 +35,38 @@ async function signUp(username, password) {
             body: JSON.stringify(account),
             headers: { 'Content-Type': 'application/json' }
         })
+
+        return "Account has been created"
     }
     catch (err) {
         return { status: "Couldn't create any account!", error: err }
     }
 
-    return { status: "Account has been created", Account: account }
 }
 
-async function cmp() {
-    let node1 = await signUp("ntaoe1", "pass1")
-    console.log(node1.status)
+async function signIn(username, password) {
 
+    try {
+        const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
+        const ret = await response.text()
+        let arr = JSON.parse(ret)
+        if (arr.length)
+        {
+            let passHash = arr[0].passHash
+            if(passHash == sha256(password))
+                return "Login Successful"
+            else
+                return "Wrong username or password"
+        }
+        else
+            return "No such account"
+    } catch (err) {
+        return "No such server"
+    }
 }
-// cmp();
 
 
-// Node Discovery:::
-// async function discoverAdjacentNode() {
-//     let adjacentNode = []
-//     await findDevice().then(async (devices) => {
-//         console.log(devices)
-//         for (node of devices) {
-//             if ((await isPortReachable(4000, { host: node.ip }))) {
-//                 // console.log(node.ip)
-//                 adjacentNode.push(node.ip)
-//             }
-//         }
-//     })
-//     return adjacentNode
-// }
+// cmp()
 
 
-// discoverAdjacentNode().then(res => console.log(res))
-
+module.exports = { signUp, signIn };

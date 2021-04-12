@@ -9,7 +9,6 @@ async function getAllData(collection) {
 async function getDataFromId(collection, keyName, keyValue) {
     try {
         let query = { [keyName]: keyValue }
-        console.log(query)
         return await collection.find(query)
     }
     catch (err) { return `Error from getting Data from ${keyName}!!!` }
