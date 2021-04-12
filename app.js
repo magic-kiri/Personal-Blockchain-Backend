@@ -1,9 +1,9 @@
 var express = require('express');
 var path = require('path');
-var bodyParser = require('body-parser');
+// var bodyParser = require('body-parser');
 var json = require('json');
 var logger = require('logger');
-var methodOverride = require('method-override');
+// var methodOverride = require('method-override');
 var http = require('http');
 
 var urlencoded = require('url');
@@ -12,6 +12,8 @@ var sha256 = require('js-sha256')
 var Blockchain = require('./Blockchain')
 var routes = require('./routes')
 var app = express();
+
+var {adjacentNode} = require('./findHost')
 
 app.set('port', 4000);
 
@@ -40,6 +42,8 @@ app.get('/is_valid', (req,res) => routes.is_valid(req,res,blockchain))
 app.post('/add_transaction', (req,res) => routes.add_transaction(req,res,blockchain))
 
 app.post('/connect_node', (req,res) => routes.connect_node(req,res,blockchain))
+
+app.post('/request_transaction', (req,res)=> routes.request_transaction(req,res))
 
 var MongoClient = require('mongodb').MongoClient;
 

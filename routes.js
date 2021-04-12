@@ -44,6 +44,10 @@ function connect_node(req,res,blockchain)
     return res.send(response)
 }
 
+function request_transaction(req,res)
+{
+    
+}   
 
 
-module.exports = {get_chain,is_valid,add_transaction,connect_node};
+module.exports = {get_chain,is_valid,add_transaction,connect_node,request_transaction};

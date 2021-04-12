@@ -16,8 +16,6 @@ class CryptoSecurity{
               });
         return {privateKey, publicKey};
     }
-
-
     encryption(data,publicKey){
         const encryptedData = crypto.publicEncrypt(
             {

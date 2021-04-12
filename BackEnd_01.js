@@ -1,9 +1,8 @@
 
-const findDevice = require('local-devices');
+// const findDevice = require('local-devices');
 const { CryptoSecurity } = require("./security")
 const { Account } = require("./account")
 const fetch = require('node-fetch');
-const isPortReachable = require('is-port-reachable');
 const dbPort = 8080
 
 // This function returns an account. It also creates an instance in DB
@@ -46,22 +45,24 @@ async function cmp() {
     console.log(node1.status)
 
 }
-cmp();
+// cmp();
 
 
 // Node Discovery:::
-async function discoverAdjacentNode() {
-    let adjacentNode = []
-    await findDevice().then(async (devices) => {
-        for (node of devices) {
-            if ((await isPortReachable(dbPort, { host: node.ip }))) {
-                // console.log(node.ip)
-                adjacentNode.push(node.ip)
-            }
-        }
-    })
-    return adjacentNode
-}
+// async function discoverAdjacentNode() {
+//     let adjacentNode = []
+//     await findDevice().then(async (devices) => {
+//         console.log(devices)
+//         for (node of devices) {
+//             if ((await isPortReachable(4000, { host: node.ip }))) {
+//                 // console.log(node.ip)
+//                 adjacentNode.push(node.ip)
+//             }
+//         }
+//     })
+//     return adjacentNode
+// }
 
 
 // discoverAdjacentNode().then(res => console.log(res))
+

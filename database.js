@@ -32,13 +32,13 @@ app.get('/accounts', async function (req, res) {
 });
 
 // Get an account with username
-app.get('/account/:username',async function (req, res) {
-  res.json((await getDataFromId(Account,"username",req.params.username)))
+app.get('/account/:username', async function (req, res) {
+  res.json((await getDataFromId(Account, "username", req.params.username)))
 });
 
 // Add a new account
-app.post('/account',async function (req, res) {
-  await addData(Account, req.body,res)
+app.post('/account', async function (req, res) {
+  await addData(Account, req.body, res)
 });
 
 
@@ -50,38 +50,59 @@ app.post('/account',async function (req, res) {
 
 
 // Getting the full Blockchain
-app.get('/Blockchain',async function (req, res) {
+app.get('/Blockchain', async function (req, res) {
   res.json((await getAllData(Block)))
 });
 
 // Get a certain block with index
-app.get('/Blockchain/:index',async function (req, res) {
-  res.json((await getDataFromId(Block,"index",req.params.index)))
+app.get('/Blockchain/:index', async function (req, res) {
+  res.json((await getDataFromId(Block, "index", req.params.index)))
 });
 
 // WARNING::
 // Add a new account /// This will not exist....
-app.post('/addBlock',async function (req, res) {
-  await addData(Block, req.body,res)
+app.post('/addBlock', async function (req, res) {
+  await addData(Block, req.body, res)
 });
 
 ////////////// Upper portion will be depricated
 ///////////////////////////////////////////////////////////////////////////
-// Transaction Pool section 
 
+
+
+////////////////////////////////////////////////////////////////////////////
+/////////////////// Transaction Pool section ///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // Getting the full transaction pool
-app.get('/Pool',async function (req, res) {
+app.get('/Pool', async function (req, res) {
   res.json((await getAllData(Pool)))
 });
 
 
 // WARNING::
 // Add a new transaction/// This will not exist....
-app.post('/addTransaction',async function (req, res) {
-  await addData(Pool, req.body,res)
+app.post('/addTransaction', async function (req, res) {
+  await addData(Pool, req.body, res)
 });
 ////////////// Upper portion will be depricated
 
+
+// Deletes specific transaction....
+// ///////////////////////////////////
+async function dlt(block) {
+  Pool.findOneAndRemove(block, function (err, block) {
+    if(err)
+    {
+      console.log(err);
+    }
+    else
+    {
+      console.log("Deleted: ");
+      console.log(block);
+    }
+  })
+}
+//////////////////////////////////
 
 // Running the server
 app.listen(port, function () {
