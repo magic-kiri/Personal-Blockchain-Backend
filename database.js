@@ -8,17 +8,19 @@ const { getAllData, getDataFromId, addData } = require(`./dbMethod`);
 
 var port = 8080;
 var db = 'mongodb://localhost/PB'
+
 mongoose.connect(db,
-  {
+{
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true
-  }, (err) => {
+}, (err) => {
     if (err)
-      console.error(err);
+        console.error(err);
     else
-      console.log("Connected to the mongodb");
-  });
+        console.log("Connected to the mongodb");
+});
+
 
 // This portion is for accounts and others
 app.use(express.json())
@@ -38,7 +40,7 @@ app.get('/account/:username', async function (req, res) {
 
 // Add a new account
 app.post('/account', async function (req, res) {
-  await addData(Account, req.body, res)
+  res.json(await addData(Account, req.body))
 });
 
 

@@ -6,17 +6,18 @@ const fetch = require('node-fetch');
 const { sha256 } = require("js-sha256");
 const dbPort = 8080
 
-// This function returns an account. It also creates an instance in DB
-async function signUp(username, password) {
+const { getAllData, getDataFromId, addData } = require(`./dbMethod`);
+const accountModel = require('./accountModel');
 
+
+
+async function signUp(username, password) {
+    // This portion checks that this username is available or not.
     try {
-        const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
-        const ret = await response.text()
-        let arr = JSON.parse(ret)
-        if (arr.length)
+        let response = await getDataFromId(accountModel,"username",username);
+        if (response.length)
             return "Already exist an account with this username"
     } catch (err) {
-        // console.log("jhamela")
         return "No such server"
     }
 
@@ -26,47 +27,32 @@ async function signUp(username, password) {
     let encryptedPrivateKey = cryptoSecurity.symmetricEncryption(privateKey, password)
     // Creating a new Account
     let account = new Account(username, password, publicKey, encryptedPrivateKey)
-    console.log("account has permission to signup")
-    // This portion use POST method to store an account to the database. 
-    // Unhandled promise rejection... Warning
+    
+    // Account is going to post in Database(not through db server)
     try {
-        const res = await fetch(`http://localhost:${dbPort}/account`, {
-            method: 'POST',
-            body: JSON.stringify(account),
-            headers: { 'Content-Type': 'application/json' }
-        })
-
+        const res = await addData(accountModel,account)
         return "Account has been created"
     }
     catch (err) {
-        return { status: "Couldn't create any account!", error: err }
+        return "Couldn't create any account!"
     }
 
 }
 
 async function signIn(username, password) {
-
     try {
-        const response = await fetch(`http://localhost:${dbPort}/account/${username}`)
-        const ret = await response.text()
-        let arr = JSON.parse(ret)
-        if (arr.length)
+        let response = await getDataFromId(accountModel,"username",username);
+        if (response.length)
         {
-            let passHash = arr[0].passHash
-            if(passHash == sha256(password))
+            let passHash = sha256(password)
+            if(passHash == response[0].passHash)
                 return "Login Successful"
             else
                 return "Wrong username or password"
         }
-        else
-            return "No such account"
     } catch (err) {
         return "No such server"
     }
 }
-
-
-// cmp()
-
 
 module.exports = { signUp, signIn };
