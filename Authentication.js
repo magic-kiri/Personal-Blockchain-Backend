@@ -29,8 +29,8 @@ async function signUp(username, password) {
     let account = new Account(username, sha256(password), publicKey, encryptedPrivateKey,new Date())
     
     // debugging
-    let sign = cryptoSecurity.signing("ho valasos",privateKey)
-    console.log(sign)
+    // let sign = cryptoSecurity.signing("ho valasos",privateKey)
+    // console.log(sign)
     // debugging
 
     // Account is going to post in Database(not through db server)
