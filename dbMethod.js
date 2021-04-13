@@ -15,7 +15,13 @@ async function getDataFromId(collection, keyName, keyValue) {
 }
 
 async function addData(collection, data) {
-    return await collection.create(data);
+    try {
+        return await collection.create(data);
+    }
+    catch (err) {
+        return err;
+    }
+
 }
 
 module.exports = { getAllData, getDataFromId, addData }

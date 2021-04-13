@@ -1,3 +1,5 @@
+const { getAllData, getDataFromId, addData } = require(`./dbMethod`);
+var Pool = require('./transactionModel')
 
 // to get our blockchain we call this
 function get_chain(req, res, blockchain) {
@@ -26,15 +28,10 @@ function is_valid(req, res, blockchain) {
 //     var response = {'message': `This transaction will be added to next Block`}
 //     return res.send(response)
 // }
-function add_transaction(req,res,blockchain){
-    var body = req.body
-    // We must have sender,receiver and amount
-    var transaction_keys = ['sender', 'receiver', 'amount'] 
-    for(let key of transaction_keys)
-        if(body[key] === undefined)
-            return res.send('Some elements of the transaction are missing')       
-    var response = {'message': `This transaction will be added to next Block`}
-    return res.send(response)
+async function addTransaction(transaction){
+    
+    let response = await addData(Pool,transaction)
+    return response
 }
 // connect with other nodes with IP address in a local network
 function connect_node(req,res,blockchain)
@@ -59,4 +56,4 @@ function request_transaction(req,res)
 }   
 
 
-module.exports = {get_chain,is_valid,add_transaction,connect_node,request_transaction};
+module.exports = {get_chain,is_valid,addTransaction,connect_node,request_transaction};

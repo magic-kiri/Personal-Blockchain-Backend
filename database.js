@@ -64,7 +64,7 @@ app.get('/Blockchain/:index', async function (req, res) {
 // WARNING::
 // Add a new account /// This will not exist....
 app.post('/addBlock', async function (req, res) {
-  await addData(Block, req.body, res)
+  res.send(await addData(Block, req.body))
 });
 
 ////////////// Upper portion will be depricated
@@ -84,7 +84,7 @@ app.get('/Pool', async function (req, res) {
 // WARNING::
 // Add a new transaction/// This will not exist....
 app.post('/addTransaction', async function (req, res) {
-  await addData(Pool, req.body, res)
+  res.send(await addData(Pool, req.body))
 });
 ////////////// Upper portion will be depricated
 
