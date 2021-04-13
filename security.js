@@ -11,43 +11,27 @@ class CryptoSecurity{
                     modulusLength: 2048,    // options
                     publicExponent: 0x10101,
                     publicKeyEncoding: {type: 'spki',format: 'pem',passphrase:pass},
-                    privateKeyEncoding: {type: 'pkcs8',format: 'pem', cipher: 'aes-192-cbc',passphrase: pass
-                    }
+                    privateKeyEncoding: {type: 'pkcs8',format: 'pem', cipher: 'aes-192-cbc',passphrase: pass   }
               });
         return {privateKey, publicKey};
     }
-    encryption(data,publicKey){
-        const encryptedData = crypto.publicEncrypt(
-            {
-                key: publicKey,
-                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                oaepHash: "sha256",
-            },
-            // We convert the data string to a buffer using `Buffer.from`
-            Buffer.from(data)
-        )
-        console.log("encypted data: ", encryptedData.toString("base64"))
-        return encryptedData
+    encryption(plaintext,publicKey){
+        const encryptedData = crypto.publicEncrypt(publicKey  , Buffer.from(plaintext))
+        // console.log("encypted data: ", encryptedData.toString("base64"))
+        return encryptedData.toString("base64")
     }
-    decryption(encryptedData,privatekey,pass){
+    decryption(cipher,privateKey,pass){
         const decryptedData = crypto.privateDecrypt(
             {
-                key: privatekey,
-                // In order to decrypt the data, we need to specify the
-                // same hashing function and padding scheme that we used to
-                // encrypt the data in the previous step
-                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                oaepHash: "sha256",
-                passphrase: pass
-            },
-            Buffer.from(encryptedData)
-        )
+              key: privateKey,  passphrase: pass},
+            Buffer.from(cipher, "base64")
+          );
         // The decrypted data is of the Buffer type, which we can convert to a
         // string to reveal the original data
-        console.log("decrypted data: ", decryptedData.toString())
-        return decryptedData
+        // console.log("decrypted data: ", decryptedData.toString())
+        return decryptedData.toString();
     }
-    signing(verifiableData,privateKey)
+    signing(verifiableData,privateKey,pass)
     {
         // The signature method takes the data we want to sign, the
         // hashing algorithm, and the padding scheme, and generates
@@ -55,8 +39,10 @@ class CryptoSecurity{
         const signature = crypto.sign("sha256", Buffer.from(verifiableData), {
             key: privateKey,
             padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+            passphrase: pass
+            
         })
-        console.log(signature.toString("base64"))
+        // console.log(signature.toString("base64"))
         return signature
     }
 
@@ -66,10 +52,11 @@ class CryptoSecurity{
             {
                 key: publicKey,
                 padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+                // passphrase:pass
             },
             signature
         )
-        console.log("signature verified: ", isVerified)
+        // console.log("signature verified: ", isVerified)
         return isVerified
     }
     
@@ -96,5 +83,30 @@ class CryptoSecurity{
 
 }
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+////////  This portion is only for Debuging the overall security algorithms//////////
+/////////////////////////////////////////////////////////////////////////////////////
+// function test(pass)
+// {
+
+//     let cs = new CryptoSecurity()
+//     const {publicKey,privateKey}  = cs.getKey(pass)
+//     let plaintext = 'hello '
+    
+//     const encryptedPrivateKey = cs.symmetricEncryption(privateKey,pass)
+//     const decryptedPrivateKey = cs.symmetricDecryption(encryptedPrivateKey,pass)
+//     console.log("step 01 ")
+//     console.log(privateKey == decryptedPrivateKey)
+//     const cipher = cs.encryption(plaintext,publicKey)
+//     const decrypted = cs.decryption(cipher,decryptedPrivateKey,pass)
+//     console.log(" step 1 "+decrypted)
+
+//     const signature = cs.signing(plaintext,decryptedPrivateKey,pass)
+//     const res = cs.verify(signature,plaintext,publicKey)
+//     console.log("step 2 " + res)
+// }
+// test('pass')
 
 module.exports = {CryptoSecurity}

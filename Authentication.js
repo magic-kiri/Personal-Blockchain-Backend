@@ -24,7 +24,6 @@ async function signUp(username, password) {
     let cryptoSecurity = new CryptoSecurity()
     const { privateKey, publicKey } = cryptoSecurity.getKey(password)
     let encryptedPrivateKey = cryptoSecurity.symmetricEncryption(privateKey, password)
-
     // Creating a new Account
     let account = new Account(username, sha256(password), publicKey, encryptedPrivateKey,new Date())
     
