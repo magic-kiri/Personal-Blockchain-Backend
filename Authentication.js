@@ -28,6 +28,7 @@ async function signUp(username, password) {
     let account = new Account(username, sha256(password), publicKey, encryptedPrivateKey,new Date())
     
     // debugging
+    // console.log(privateKey)
     // let sign = cryptoSecurity.signing("ho valasos",privateKey)
     // console.log(sign)
     // debugging

@@ -25,6 +25,7 @@ class Account{
         if(this.passHash == sha256(password))
         {
             let cryptoSecurity = new CryptoSecurity()
+            // console.log(this.encryptedPrivateKey)
             return cryptoSecurity.symmetricDecryption(this.encryptedPrivateKey,password).toString();
         }
         else 

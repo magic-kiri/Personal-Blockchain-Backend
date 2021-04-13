@@ -6,16 +6,23 @@ const {tmpPrivateKey} = require('./Authentication')
 const { CryptoSecurity } = require("./security")
 
 async function createTransaction(transaction,account,password){
-    let cryptoSecurity = new CryptoSecurity()
+    try{
+        const cryptoSecurity = new CryptoSecurity()
+    // console.log("passphrase is : " + password)
     const privateKey = account.getPrivateKey(password)
     if(!privateKey)
         return {status:"Error with password!!!!!"}
-    console.log(privateKey)
-    let signature = cryptoSecurity.signing(transaction,privateKey)
-    console.log(signature)
+    // console.log(privateKey)
+    let signature = cryptoSecurity.signing(transaction.toString(),privateKey,password)
+    // console.log(signature)
     let packet = {transaction,signature}
     let response = await addData(Pool,packet)
-    return {status: response}
+    return {status: "Transaction added", body: response}
+    }
+    catch(er)
+    {
+        return {status:"Error while create transaction!"}
+    }   
 }
 
 

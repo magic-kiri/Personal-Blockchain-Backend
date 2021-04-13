@@ -51,9 +51,15 @@ app.post('/connect_node', (req, res) => routes.connect_node(req, res, blockchain
 
 app.post('/request_transaction', (req, res) => routes.request_transaction(req, res))
 
-
+// this adds transaction to the ledger...
 app.post('/add_transaction', async (req, res)=>{  
     res.send(await transactionHandler.createTransaction(req.body,loggedAccount,userPassword))
+})
+
+
+// This is an API to know that any user is signed in or not?
+app.get('/is_log_in', (req,res)=>{
+    res.send({status: (loggedAccount)})
 })
 
 // This is an API for sign_up
