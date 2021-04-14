@@ -59,7 +59,10 @@ app.post('/add_transaction', async (req, res) => {
 
 // This is an API to know that any user is signed in or not?
 app.get('/is_log_in', (req, res) => {
-    res.send({ status: (loggedAccount) })
+    if(loggedAccount==null)
+        res.send({status: false})
+    else
+        res.send({ status: true, username : loggedAccount.getUsername() })
 })
 
 // This is an API for sign_up
