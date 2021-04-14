@@ -1,29 +1,33 @@
 
 const { getAllData, getDataFromId, addData } = require(`./dbMethod`);
 var Pool = require('./transactionModel')
-const {tmpPrivateKey} = require('./Authentication')
-
+const { tmpPrivateKey } = require('./Authentication')
+const { propagatePacket } = require('./comunicator');
 const { CryptoSecurity } = require("./security")
 
-async function createTransaction(transaction,account,password){
-    try{
+
+
+
+async function createTransaction(transaction, account, password) {
+    // transaction means transaction
+    try {
         const cryptoSecurity = new CryptoSecurity()
-    // console.log("passphrase is : " + password)
-    const privateKey = account.getPrivateKey(password)
-    if(!privateKey)
-        return {status:"Error with password!!!!!"}
-    // console.log(privateKey)
-    let signature = cryptoSecurity.signing(transaction.toString(),privateKey,password)
-    // console.log(signature)
-    let packet = {transaction,signature}
-    let response = await addData(Pool,packet)
-    return {status: "Transaction added", body: response}
+        const privateKey = account.getPrivateKey(password)
+        const publicKey = account.getPublicKey()
+        transaction.creatorsPublicKey = publicKey;  // Adding the public key in transaction 
+        if (!privateKey)
+            return { status: "Error with password!!!!!" }
+
+        const signature = cryptoSecurity.signing(transaction.toString(), privateKey, password)
+        const txn = { body: transaction, signature: signature }
+        const packet = { account: account, transaction: txn }
+        propagatePacket(packet)
+        return { status: "Transaction is going to be added" }
     }
-    catch(er)
-    {
-        return {status:"Error while create transaction!"}
-    }   
+    catch (er) {
+        return { status: "Error while create transaction!", body: er }
+    }
 }
 
 
-module.exports = {createTransaction}
+module.exports = { createTransaction }

@@ -10,16 +10,16 @@ var port = 8080;
 var db = 'mongodb://localhost/PB'
 
 mongoose.connect(db,
-{
+  {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true
-}, (err) => {
+  }, (err) => {
     if (err)
-        console.error(err);
+      console.error(err);
     else
-        console.log("Connected to the mongodb");
-});
+      console.log("Connected to the mongodb");
+  });
 
 
 // This portion is for accounts and others
@@ -93,12 +93,10 @@ app.post('/addTransaction', async function (req, res) {
 // ///////////////////////////////////
 async function dlt(block) {
   Pool.findOneAndRemove(block, function (err, block) {
-    if(err)
-    {
+    if (err) {
       console.log(err);
     }
-    else
-    {
+    else {
       console.log("Deleted: ");
       console.log(block);
     }

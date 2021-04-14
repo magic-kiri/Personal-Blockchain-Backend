@@ -1,37 +1,43 @@
 const { sha256 } = require("js-sha256")
-const {CryptoSecurity} = require("./security")
+const { CryptoSecurity } = require("./security")
 
-class Account{
+class Account {
 
 
-    constructor(username,passHash,publicKey,encryptedPrivateKey,timestamp)
-    {
+    constructor(username, passHash, publicKey, encryptedPrivateKey, timestamp) {
         this.publicKey = publicKey
         this.encryptedPrivateKey = encryptedPrivateKey
         this.username = username
         this.passHash = passHash
-        this.timestamp =timestamp
+        this.timestamp = timestamp
     }
 
-    getPublicKey(){
+    getPublicKey() {
         return this.publicKey
     }
-    getEncryptedPrivateKey(){
+    getEncryptedPrivateKey() {
         return this.encryptedPrivateKey
     }
+    getUsername() {
+        return this.username
+    }
+    getPassHash() {
+        return this.passHash
+    }
+    getTimestamp() {
+        return this.timestamp
+    }
 
-    getPrivateKey(password)
-    {
-        if(this.passHash == sha256(password))
-        {
+    getPrivateKey(password) {
+        if (this.passHash == sha256(password)) {
             let cryptoSecurity = new CryptoSecurity()
             // console.log(this.encryptedPrivateKey)
-            return cryptoSecurity.symmetricDecryption(this.encryptedPrivateKey,password).toString();
+            return cryptoSecurity.symmetricDecryption(this.encryptedPrivateKey, password).toString();
         }
-        else 
+        else
             return false;
     }
-    
+
 }
 
-module.exports = {Account}
+module.exports = { Account }
