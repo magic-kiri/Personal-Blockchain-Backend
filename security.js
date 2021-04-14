@@ -45,7 +45,7 @@ class CryptoSecurity{
         // console.log(signature.toString("base64"))
         return signature
     }
-
+    // Provide signature as a Buffer, and verifiableData as a string
     verify(signature,verifiableData,publicKey)
     {
         const isVerified = crypto.verify("sha256", Buffer.from(verifiableData),

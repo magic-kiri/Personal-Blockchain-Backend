@@ -6,7 +6,7 @@ const { Account } = require("./account")
 const { sha256 } = require("js-sha256");
 
 
-const { getDataFromId, addData } = require(`./dbMethod`);
+const {getAllData, getDataFromId, addData } = require(`./dbMethod`);
 const accountModel = require('./accountModel');
 
 
@@ -31,6 +31,31 @@ function createAccount(username, password) {
     return account
 }
 
+async function addAccountInDB(account) {
+    return await addData(accountModel, account)
+}
+
+// This function adds an account if its not already exist
+async function addAccount(account) {
+    try {
+        let response = await isAlreadyExistsInDB(account.username)
+        if (response.statusCode == 200) {
+            if (response.body == false)
+                return addAccountInDB(account)
+            //  console.log("yes");
+            return { statusCode: 200, body: `This account was previously added!` }
+        }
+        else
+            return response
+    }
+    catch (err) {
+        return { statusCode: 206, body: err }
+    }
+    // Account is going to post in Database(not through db server)
+
+}
+
+// This function creates an account with username and password
 async function signUp(username, password) {
     // This portion checks that this username is available or not.
 
@@ -45,8 +70,7 @@ async function signUp(username, password) {
     const account = createAccount(username, password)
 
     // Account is going to post in Database(not through db server)
-    const res = await addData(accountModel, account)
-    return res
+    return addAccountInDB(account)
 }
 
 async function signIn(username, password) {
@@ -66,4 +90,19 @@ async function signIn(username, password) {
         return { statusCode: response.statusCode, body: 'No such server!' }
 }
 
-module.exports = { signUp, signIn };
+async function getAccounts()
+{
+    return await getAllData(accountModel)
+}
+async function getAccount(username)
+{
+    return await getDataFromId(accountModel, "username", username)
+}
+
+
+async function init()
+{
+
+}
+
+module.exports = { signUp, signIn, addAccount, getAccounts , getAccount,init };

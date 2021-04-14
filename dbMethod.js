@@ -1,9 +1,10 @@
 
 async function getAllData(collection) {
     try {
-        return await collection.find({})
+        const response =  await collection.find({})
+        return {statusCode:200 , body: response}
     }
-    catch (err) { return "Error from getting data" }
+    catch (err) { return {statusCode:400, body : `Error from getting Data of ${collection}`} }
 }
 
 async function getDataFromId(collection, keyName, keyValue) {

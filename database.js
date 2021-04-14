@@ -52,14 +52,7 @@ app.post('/account', async function (req, res) {
 
 
 // Getting the full Blockchain
-app.get('/Blockchain', async function (req, res) {
-  res.json((await getAllData(Block)))
-});
 
-// Get a certain block with index
-app.get('/Blockchain/:index', async function (req, res) {
-  res.json((await getDataFromId(Block, "index", req.params.index)))
-});
 
 // WARNING::
 // Add a new account /// This will not exist....
