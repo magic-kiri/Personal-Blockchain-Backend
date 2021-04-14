@@ -11,14 +11,15 @@ const accountModel = require('./accountModel');
 
 
 async function isAlreadyExistsInDB(username) {
-    try {
-        let response = await getDataFromId(accountModel, "username", username);
-        if (response.length)
-            return true
-        return false
-    } catch (err) {
-        throw "No such server"
+    let response = await getDataFromId(accountModel, "username", username);
+    if (response.statusCode == 200) {
+        let accounts = response.body
+        if (accounts.length)
+            return { statusCode: 200, body: true }
+        return { statusCode: 200, body: false }
     }
+    else
+        return response
 }
 
 // Creating a new Account type object
@@ -32,40 +33,37 @@ function createAccount(username, password) {
 
 async function signUp(username, password) {
     // This portion checks that this username is available or not.
-    try {
-        if (await isAlreadyExistsInDB(username))
-            return { status: "Already exist an account with this username" }
-    }
-    catch (err) { return { status: err } }
 
+    let response = await isAlreadyExistsInDB(username)
+    if (response.statusCode == 200) {
+        if (response.body == true)
+            return { statusCode: 406, body: `There is an account with this username:${username}` }
+    }
+    else
+        return response
     //creating an Account type object
-    const account = createAccount(username,password)
+    const account = createAccount(username, password)
 
     // Account is going to post in Database(not through db server)
-    try {
-        const res = await addData(accountModel, account)
-        return { status: "Account has been created", Account: account }
-    }
-    catch (err) {
-        return { status: "Couldn't create any account!" }
-    }
-
+    const res = await addData(accountModel, account)
+    return res
 }
 
 async function signIn(username, password) {
-    try {
-        let response = await getDataFromId(accountModel, "username", username);
-        if (response.length) {
+    let response = await getDataFromId(accountModel, "username", username);
+    if (response.statusCode == 200) {
+        let accounts = response.body
+        if (accounts.length) {
             let passHash = sha256(password)
-            if (passHash == response[0].passHash)
-                return { status: "Login Successful", account: response[0] }
+            if (passHash == accounts[0].passHash)
+                return { statusCode: 200, body: accounts[0] }
             else
-                return { status: "Wrong username or password" }
+                return { statusCode: 406, body: 'Password didn\'t matched!' }
         }
-        return { status: "No such account" }
-    } catch (err) {
-        return { status: "No such server" }
+        return { statusCode: 404, body: 'No such account with this username!' }
     }
+    else
+        return { statusCode: response.statusCode, body: 'No such server!' }
 }
 
 module.exports = { signUp, signIn };

@@ -9,17 +9,21 @@ async function getAllData(collection) {
 async function getDataFromId(collection, keyName, keyValue) {
     try {
         let query = { [keyName]: keyValue }
-        return await collection.find(query)
+        let response = await collection.find(query)
+        return {statusCode: 200, body: response}
     }
-    catch (err) { return `Error from getting Data from ${keyName}!!!` }
+    catch (err) {
+        return  { statusCode: 400, body :  `Error from getting Data with ${keyName}!!!\n + ${err}` }
+    }
 }
 
 async function addData(collection, data) {
     try {
-        return await collection.create(data);
+        let response = await collection.create(data);
+        return {statusCode: 200, body: response}
     }
     catch (err) {
-        return err;
+        return { statusCode: 400, body :  `Error from adding Data with ${data}!!!\n + ${err}` }
     }
 
 }

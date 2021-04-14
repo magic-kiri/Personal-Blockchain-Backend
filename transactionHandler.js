@@ -16,16 +16,15 @@ async function createTransaction(transaction, account, password) {
         const publicKey = account.getPublicKey()
         transaction.creatorsPublicKey = publicKey;  // Adding the public key in transaction 
         if (!privateKey)
-            return { status: "Error with password!!!!!" }
-
+            return { statusCode: 409, body: "Unable to decrypt with the password!" }
         const signature = cryptoSecurity.signing(transaction.toString(), privateKey, password)
         const txn = { body: transaction, signature: signature }
         const packet = { account: account, transaction: txn }
         propagatePacket(packet)
-        return { status: "Transaction is going to be added" }
+        return { statusCode:200, body: "Transaction is going to be added" }
     }
     catch (er) {
-        return { status: "Error while create transaction!", body: er }
+        return { statusCode: 405, body: `Error while create transaction! \n\n\n ${er}` }
     }
 }
 

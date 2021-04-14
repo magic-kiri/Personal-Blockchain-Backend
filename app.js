@@ -53,43 +53,58 @@ app.post('/request_transaction', (req, res) => routes.request_transaction(req, r
 
 // this adds transaction to the ledger...
 app.post('/add_transaction', async (req, res) => {
-    res.send(await transactionHandler.createTransaction(req.body, loggedAccount, userPassword))
+    const response = await transactionHandler.createTransaction(req.body, loggedAccount, userPassword)
+    res.status(response.statusCode).send(response.body)
 })
 
 
 // This is an API to know that any user is signed in or not?
 app.get('/is_log_in', (req, res) => {
-    if(loggedAccount==null)
-        res.send({status: false})
+    if (loggedAccount == null)
+        res.status(200).send({ loggedIn: false, username: null })
     else
-        res.send({ status: true, username : loggedAccount.getUsername() })
+        res.status(200).send({ loggedIn: true, username: loggedAccount.getUsername() })
 })
 
 // This is an API for sign_up
 // Returns a string as response
 app.post('/sign_up', async (req, res) => {
-    res.send(await authentication.signUp(req.body.username, req.body.password))
+    const response = await authentication.signUp(req.body.username, req.body.password)
+    res.status(response.statusCode).send(response.body)
 })
 
 // This is an API for sign_in
 // Returns a string as response
 app.post('/sign_in', async (req, res) => {
     let response = (await authentication.signIn(req.body.username, req.body.password))
-    if (response.status == "Login Successful") {
-        const account = response.account
+    if (response.statusCode == 200) {
+        const account = response.body
         loggedAccount = new Account(account.username, account.passHash, account.publicKey, account.encryptedPrivateKey, account.timestamp)
         userPassword = req.body.password
     }
-    res.send(response)
+    res.status(response.statusCode).send(response.body)
 })
 
 app.get('/log_out', (req, res) => {
     loggedAccount = null
     userPassword = null
-    res.send({ status: "Logged-out successfully!" })
+    res.status(200).send("Logged-out successfully!")
+})
+
+app.get('/get_keys', (req, res) => {
+    if (loggedAccount == null)
+        res.status(204).send("You have to log-in first!")
+    else {
+        const publicKey = loggedAccount.getPublicKey()
+        const privateKey = loggedAccount.getPrivateKey(userPassword)
+        res.status(200).send({ publicKey: publicKey, privateKey: privateKey })
+    }
+
 })
 
 comunicatorInit()
+
+
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port' + app.get('port'));
 });
