@@ -1,35 +1,50 @@
-var express = require('express');
-var path = require('path');
-// var bodyParser = require('body-parser');
-var json = require('json');
-var logger = require('logger');
-// var methodOverride = require('method-override');
-var http = require('http')
+const express = require('express');
+const cors = require('cors')
+const http = require('http')
+const mongoose = require('mongoose');
+
+// const path = require('path');
+// const bodyParser = require('body-parser');
+// const json = require('json');
+// const logger = require('logger');
+// const methodOverride = require('method-override');
+// const urlencoded = require('url');
+// const sha256 = require('js-sha256')
 
 const accountHandler = require('./accountHandler')
 const transactionHandler = require('./transactionHandler')
+const { comunicatorInit } = require('./comunicator');
+const blockchainHandler = require('./blockchainHandler');
 const { Account } = require('./account')
 
 
-// var urlencoded = require('url');
-var sha256 = require('js-sha256')
-
-var Blockchain = require('./Blockchain')
-var routes = require('./routes')
-var app = express();
-const database = require('./database')
-var { comunicatorInit } = require('./comunicator');
-const blockchainHandler = require('./blockchainHandler');
+const app = express();
 
 
 app.set('port', 4000);
+const db = 'mongodb://localhost/PB'
+
+mongoose.connect(db,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+  }, (err) => {
+    if (err)
+      console.error(err);
+    else
+      console.log("Connected to the mongodb");
+  });
+
 
 var loggedAccount = null
 var userPassword = null
-let tmpPrivateKey
+
 // CREATED A BLOCKCHAIN 
 
 app.use(express.json());
+app.use(cors())
+
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded());
 // app.use(methodOverride());
@@ -83,6 +98,7 @@ app.get('/is_log_in', (req, res) => {
 // This is an API for sign_up
 // Returns a string as response
 app.post('/sign_up', async (req, res) => {
+    console.log(req.body)
     const response = await accountHandler.signUp(req.body.username, req.body.password)
     res.status(response.statusCode).send(response.body)
 })
@@ -105,14 +121,17 @@ app.get('/log_out', (req, res) => {
     res.status(200).send("Logged-out successfully!")
 })
 // The API provides current users public key and private key
-app.get('/get_keys', (req, res) => {
+app.post('/get_keys', (req, res) => {
+    
     if (loggedAccount == null)
         res.status(204).send("You have to log-in first!")
-    else {
+    else if(req.body.password == userPassword){
         const publicKey = loggedAccount.getPublicKey()
         const privateKey = loggedAccount.getPrivateKey(userPassword)
         res.status(200).send({ publicKey: publicKey, privateKey: privateKey })
     }
+    else
+        res.status(401).send("Password didn't matched!")
 })
 // This recieves an account and adds in its own db
 app.post('/add_account', async (req, res) => {
