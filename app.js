@@ -148,8 +148,6 @@ app.get('/account/:username', async (req, res) => {
     res.status(response.statusCode).send(response.body)
 })
 
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// END OF THIS PORTION //////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +155,7 @@ app.get('/account/:username', async (req, res) => {
 
 
 app.get('/blockchain', async function (req, res) {
-    const response = await blockchainHandler.getBlockchain()
+    const response = await blockchainHandler.getChain()
     res.status(response.statusCode).send(response.body)
 });
 

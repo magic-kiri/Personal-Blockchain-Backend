@@ -27,25 +27,7 @@ Block:
 
 {
     "index": 1,
-    "previousHash": "initiallyItsONE",
-    "transactions": [
-                    {
-                        "sender": "1st senders publicKey",
-                        "reciever": "1st recieverpublicKey",
-                        "data": {
-                                    "Name": "KIRITI",
-                                    "food": ["cofee", "suger", "pasta"],
-                                    "money": 2017
-                                }
-                    }, 
-                    {
-                        "sender": "2nd senders publicKey",
-                        "reciever": "2nd recieverpublicKey",
-                        "data": {
-                                    "Name": "bishal",
-                                    "food": ["cofee", "Extrasuger", "vuna"],
-                                    "money": 10
-                                }
-                    }
-                    ]
+    "previousHash": "ac12ebded7c4b36e547cbc14eb9392ea41d327b3fb68e41b65ec460fa95c6777",
+    "transactions": [],
+    "limit": 2
 }

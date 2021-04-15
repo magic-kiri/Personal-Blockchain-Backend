@@ -1,16 +1,16 @@
 
-// var ping = require('ping');
-// const isPortReachable = require('is-port-reachable');
 const fetch = require('node-fetch');
-const {  addAccount } = require('./accountHandler');
+const { addAccount } = require('./accountHandler');
 
-var adjacentNode = new Set()
+var liveHosts = new Set()
 // This is a list where we will knock to fetch data...
 var addressList = []
 for (i = 100; i < 110; i++)
     addressList.push(`192.168.0.${i}`)
 
 const port = 4000
+const searchInterval = 30
+
 function isNodeAlive(ip) {
     fetch(`http://${ip}:${port}`)
         .catch((e) => { })
@@ -18,13 +18,13 @@ function isNodeAlive(ip) {
         .catch((e) => { })
         .then((text) => {
             if (text == 'Welcome to Personal Blockchain!')
-                adjacentNode.add(ip), console.log(ip)
+                liveHosts.add(ip), console.log(ip)
         })
         .catch((e) => { })
 }
 
-async function discoverAdjacentNode() {
-    adjacentNode.clear();
+async function discoverliveHosts() {
+    liveHosts.clear();
     addressList.forEach(async function (ip) {
         isNodeAlive(ip)
     })
@@ -37,21 +37,22 @@ function loadAccounts() {
             fetch(`http://${ip}:${port}/accounts`)
                 .then(res => res.json())
                 .then(accounts => {
-                    accounts.forEach(  (account) =>  addAccount(account))
+                    accounts.forEach((account) => addAccount(account))
                 })
-                .catch(err=>{})
+                .catch(err => { })
         }
-        catch(err){
+        catch (err) {
             console.log(err)
         }
     })
 }
 
 
+
 async function comunicatorInit() {
-    discoverAdjacentNode()
+    discoverliveHosts()
     loadAccounts()
-    setInterval(function () { discoverAdjacentNode() }, 30 * 1000);
+    setInterval(function () { discoverliveHosts() }, searchInterval * 1000);
 }
 
 
@@ -59,7 +60,7 @@ async function comunicatorInit() {
 
 // This function propagates the packet of transaction to all the alive host in the LAN
 async function propagatePacket(packet) {
-    adjacentNode.forEach(async (ip) => {
+    liveHosts.forEach(async (ip) => {
         try {
             fetch(`http://${ip}:${port}/verify_transaction`, {
                 method: 'post',
@@ -74,6 +75,24 @@ async function propagatePacket(packet) {
     })
 }
 
+async function getAllChain(len) {
+    let chains = new Set()
+    
+    for(let ip of liveHosts) {
+        try {
+            let res = await fetch(`http://${ip}:${port}/blockchain`)
+            let chain = await res.json()
+            // console.log(chain)
+                if (chain.length > len)
+                   await chains.add(chain)
+        }
+        catch (err) {
+            // console.log(err)
+        }
+    }
+    return chains
+}
 
 
-module.exports = { comunicatorInit, propagatePacket };
+
+module.exports = { comunicatorInit, propagatePacket, getAllChain };

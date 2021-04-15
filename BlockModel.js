@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var Block = new Schema({
     index : {type: Number, required: true, unique: true},
-    // timestamp: {type:Date, required: true},
+    timestamp: {type:Date, required: true},
     previousHash: {type:String,required: true},
     transactions: {type:Array, required: true}
 },{strict:false});
