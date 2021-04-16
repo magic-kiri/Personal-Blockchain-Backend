@@ -42,15 +42,15 @@ async function createGenesisBlock()
 //////// This function extends our existing chain ... cnt is used for if storing in DB is failed...
 async function appendBlockchain(targetChain,cnt = 3)
 {
-
     let response = await getChain()
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length-1]
-
+    
     for(i=currentChain.length;i<targetChain.length;i++)
     {
         let currentBlock = targetChain[i]
         let previousHash = sha256(JSON.stringify(lastBlock))
+        
         if(previousHash==currentBlock.previousHash)
         {
             let res = await addBlock(currentBlock)
@@ -59,31 +59,31 @@ async function appendBlockchain(targetChain,cnt = 3)
                 ////// WARNING ::: this may cause infinite loop
                 console.log("ERROR WITH DATABASE WHILE APPENDING BLOCK:")
                 console.log(currentBlock)
+                return res
                 // appendBlockchain(targetChain,cnt-1)
                 break
             }
         }
         else
         {
-            console.log("Mile nai")
-            break
+            return {statusCode: 409, body: "Block didnt matched: " + JSON.stringify(currentBlock) }
         }
-        lastBlock = currentBlock
+        lastBlock = currentBlock   
     }
-    console.log(lastBlock)
-    console.log(sha256(JSON.stringify(lastBlock)))
+    return {statusCode: 200, body: {lastBlock: lastBlock, hashValue: sha256(JSON.stringify(lastBlock))}}
 }
 
-
-async function init()
+async function getUpdated()
 {
     let response = await getChainLength()
     let currentChainLength = response.body
-    
-    if(currentChainLength==0)
-        currentChainLength = await createGenesisBlock()
 
-    let adjacentChains = await getAllChain(currentChainLength-1)
+    if(currentChainLength==0)
+    {
+        await createGenesisBlock()
+        currentChainLength = 1
+    }
+    let adjacentChains = await getAllChain(currentChainLength)
     let largestChain = []
     for(let chain of adjacentChains)
     {
@@ -91,10 +91,17 @@ async function init()
         if(chain.length>largestChain.length)
             largestChain = chain
     }
-    console.log("largest Chain:")
-    console.log(largestChain)
-    await appendBlockchain(largestChain)
+    // console.log("largest Chain:")
+    // console.log(largestChain)
+    let res = await appendBlockchain(largestChain)
+    return res
 }
 
 
-module.exports = {getChain, getBlock, init,addBlock};
+async function init()
+{
+    await getUpdated()
+}
+
+
+module.exports = {getChain, getBlock, init,addBlock,getUpdated};
