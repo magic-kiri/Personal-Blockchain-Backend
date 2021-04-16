@@ -41,29 +41,35 @@ async function createGenesisBlock()
 //////// This function extends our existing chain ... cnt is used for if storing in DB is failed...
 async function appendBlockchain(targetChain,cnt = 3)
 {
-    // console.log(targetChain) 
     let response = await getChain()
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length-1]
 
     for(i=currentChain.length;i<targetChain.length;i++)
     {
-        let currenBlock = targetChain[i]
+        let currentBlock = targetChain[i]
         let previousHash = sha256(JSON.stringify(lastBlock))
-        if(previousHash == currenBlock.previousHash)
+        if(previousHash==currentBlock.previousHash)
         {
-            let res = await addBlock(currenBlock)
+            let res = await addBlock(currentBlock)
             if(res.statusCode!=200 && cnt>0)
             {
                 ////// WARNING ::: this may cause infinite loop
-                console.log(previousHash)
-                appendBlockchain(targetChain,cnt-1)
+                console.log("ERROR WITH DATABASE WHILE APPENDING BLOCK:")
+                console.log(currentBlock)
+                // appendBlockchain(targetChain,cnt-1)
                 break
             }
         }
-        else 
+        else
+        {
+            console.log("Mile nai")
             break
+        }
+        lastBlock = currentBlock
     }
+    console.log(lastBlock)
+    console.log(sha256(JSON.stringify(lastBlock)))
 }
 
 
@@ -79,6 +85,7 @@ async function init()
         currentChainLength = await createGenesisBlock()
 
     let adjacentChains = await getAllChain(currentChainLength-1)
+    // console.log(adjacentChains)
     let largestChain = []
     for(let chain of adjacentChains)
     {
@@ -87,10 +94,11 @@ async function init()
             largestChain = chain
     }
 
+
     // console.log("this is the largest chain ")
     // console.log(largestChain)
     await appendBlockchain(largestChain)
 }
 
 
-module.exports = {getChain, getBlock, init};
+module.exports = {getChain, getBlock, init,addBlock};

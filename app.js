@@ -25,16 +25,16 @@ app.set('port', 4000);
 const db = 'mongodb://localhost/PB'
 
 mongoose.connect(db,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
-  }, (err) => {
-    if (err)
-      console.error(err);
-    else
-      console.log("Connected to the mongodb");
-  });
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true
+    }, (err) => {
+        if (err)
+            console.error(err);
+        else
+            console.log("Connected to the mongodb");
+    });
 
 
 var loggedAccount = null
@@ -122,10 +122,10 @@ app.get('/log_out', (req, res) => {
 })
 // The API provides current users public key and private key
 app.post('/get_keys', (req, res) => {
-    
+
     if (loggedAccount == null)
         res.status(204).send("You have to log-in first!")
-    else if(req.body.password == userPassword){
+    else if (req.body.password == userPassword) {
         const publicKey = loggedAccount.getPublicKey()
         const privateKey = loggedAccount.getPrivateKey(userPassword)
         res.status(200).send({ publicKey: publicKey, privateKey: privateKey })
@@ -171,10 +171,16 @@ app.post('/add_block', async (req, res) => {
 })
 
 
-comunicatorInit()
-accountHandler.init()
-blockchainHandler.init()
 
+async function appStart() {
+    
+    comunicatorInit()
+    accountHandler.init()
+    setTimeout(()=>{blockchainHandler.init()},5000)
+}
+
+
+appStart()
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port' + app.get('port'));
 });
