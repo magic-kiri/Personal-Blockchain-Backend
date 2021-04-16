@@ -5,10 +5,6 @@ const Block = require('./BlockModel');
 const { getAllChain } = require('./comunicator');
 const { getAllData, getDataFromId, addData, count } = require(`./dbMethod`);
 
-
-
-
-
 async function getChain()
 {
     return await getAllData(Block)
@@ -45,10 +41,11 @@ async function createGenesisBlock()
 //////// This function extends our existing chain ... cnt is used for if storing in DB is failed...
 async function appendBlockchain(targetChain,cnt = 3)
 {
+    // console.log(targetChain) 
     let response = await getChain()
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length-1]
-    
+
     for(i=currentChain.length;i<targetChain.length;i++)
     {
         let currenBlock = targetChain[i]
@@ -68,6 +65,9 @@ async function appendBlockchain(targetChain,cnt = 3)
             break
     }
 }
+
+
+
 
 
 async function init()

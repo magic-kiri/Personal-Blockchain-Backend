@@ -165,6 +165,10 @@ app.get('/blockchain/:index', async function (req, res) {
     res.status(response.statusCode).send(response.body)
 });
 
+app.post('/add_block', async (req, res) => {
+    const response = await blockchainHandler.addBlock(req.body)
+    res.status(response.statusCode).send(response.body)
+})
 
 
 comunicatorInit()

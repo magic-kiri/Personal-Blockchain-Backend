@@ -84,7 +84,7 @@ async function getAllChain(len) {
             let chain = await res.json()
             // console.log(chain)
                 if (chain.length > len)
-                   await chains.add(chain)
+                   chains.add(chain)
         }
         catch (err) {
             // console.log(err)
