@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Block = new Schema({
-    index : {type: Number, required: true, unique: true},
+    _id : {type: Number, required: true, unique: true},
     timestamp: {type:Date, required: true},
     previousHash: {type:String,required: true},
     transactions: {type:Array, required: true}
-},{strict:false});
+},{_id:false,strict:false});
 
 module.exports = mongoose.model('Block', Block);

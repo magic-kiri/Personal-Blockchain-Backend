@@ -12,7 +12,7 @@ async function getChain()
 
 async function getBlock(index)
 {
-    return await getDataFromId(Block, "index", index)
+    return await getDataFromId(Block, "_id", index)
 }
 
 async function getChainLength()
@@ -28,7 +28,7 @@ async function addBlock(block)
 async function createGenesisBlock()
 {
     let genesisBlock = {
-        index: 1,
+        _id: 1,
         timestamp : new Date('2021-04-14T08:22:45.167+00:00'),
         previousHash : '00000',
         transactions : [],
@@ -38,9 +38,11 @@ async function createGenesisBlock()
     return res.body
 }
 
+
 //////// This function extends our existing chain ... cnt is used for if storing in DB is failed...
 async function appendBlockchain(targetChain,cnt = 3)
 {
+
     let response = await getChain()
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length-1]
@@ -73,9 +75,6 @@ async function appendBlockchain(targetChain,cnt = 3)
 }
 
 
-
-
-
 async function init()
 {
     let response = await getChainLength()
@@ -85,7 +84,6 @@ async function init()
         currentChainLength = await createGenesisBlock()
 
     let adjacentChains = await getAllChain(currentChainLength-1)
-    // console.log(adjacentChains)
     let largestChain = []
     for(let chain of adjacentChains)
     {
@@ -93,10 +91,8 @@ async function init()
         if(chain.length>largestChain.length)
             largestChain = chain
     }
-
-
-    // console.log("this is the largest chain ")
-    // console.log(largestChain)
+    console.log("largest Chain:")
+    console.log(largestChain)
     await appendBlockchain(largestChain)
 }
 
