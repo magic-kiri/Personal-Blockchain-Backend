@@ -10,3 +10,4 @@ var AccountSchema = new Schema({
 },{strict:false});
 
 module.exports = mongoose.model('Account', AccountSchema);
+
