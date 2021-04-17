@@ -2,9 +2,8 @@
 // const findDevice = require('local-devices');
 const { CryptoSecurity } = require("./security")
 const { Account } = require("./account")
-
+const { comunicatorInit } = require('./comunicator');
 const { sha256 } = require("js-sha256");
-
 
 const {getAllData, getDataFromId, addData } = require(`./dbMethod`);
 const accountModel = require('./accountModel');
@@ -102,7 +101,7 @@ async function getAccount(username)
 
 async function init()
 {
-
+    comunicatorInit()
 }
 
-module.exports = { signUp, signIn, addAccount, getAccounts , getAccount,init };
+module.exports = { signUp, signIn, addAccount, getAccounts , getAccount,init }

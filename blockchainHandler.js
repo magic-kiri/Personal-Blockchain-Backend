@@ -28,13 +28,15 @@ async function addBlock(block)
 async function createGenesisBlock()
 {
     let genesisBlock = {
-        _id: 1,
+        _id : 1,
         timestamp : new Date('2021-04-14T08:22:45.167+00:00'),
         previousHash : '00000',
         transactions : [],
         limit: 0
     }
+    // console.log("Creating genesis block")
     let res = await addBlock(genesisBlock)
+    // console.log(res)
     return res.body
 }
 
@@ -45,7 +47,7 @@ async function appendBlockchain(targetChain,cnt = 3)
     let response = await getChain()
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length-1]
-    
+
     for(i=currentChain.length;i<targetChain.length;i++)
     {
         let currentBlock = targetChain[i]

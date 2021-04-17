@@ -47,11 +47,14 @@ function loadAccounts() {
     })
 }
 
-
+async function loadTransactions(){
+    
+}
 
 async function comunicatorInit() {
     discoverliveHosts()
     loadAccounts()
+    loadTransactions()
     setInterval(function () { discoverliveHosts() }, searchInterval * 1000);
 }
 
@@ -60,7 +63,7 @@ async function comunicatorInit() {
 
 // This function propagates the packet of transaction to all the alive host in the LAN
 async function propagatePacket(packet) {
-    liveHosts.forEach(async (ip) => {
+    liveHosts.forEach( (ip) => {
         try {
             fetch(`http://${ip}:${port}/verify_transaction`, {
                 method: 'post',

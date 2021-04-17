@@ -79,6 +79,10 @@ app.post('/add_transaction', async (req, res) => {
     res.status(response.statusCode).send(response.body)
 })
 
+app.get('/transactions',async (req,res)=>{
+    const response = await transactionHandler.getTransactions()
+    res.status(response.statusCode).send(response.body)
+})
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,13 +184,15 @@ app.post('/add_block', async (req, res) => {
 
 async function appStart() {
     
-    comunicatorInit()
+    
     accountHandler.init()
+    comunicatorInit()
     setTimeout(()=>{blockchainHandler.init()},5000)
 }
 
-
 appStart()
+
+
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port' + app.get('port'));
 });
