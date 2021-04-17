@@ -1,5 +1,5 @@
 
-const { getAllData, getDataFromId, addData } = require(`./dbMethod`);
+const { getAllData, getDataFromKey, addData } = require(`./dbMethod`);
 var Pool = require('./transactionModel')
 const { tmpPrivateKey } = require('./accountHandler')
 const { propagatePacket } = require('./comunicator');

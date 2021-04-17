@@ -5,12 +5,12 @@ const { Account } = require("./account")
 const { comunicatorInit } = require('./comunicator');
 const { sha256 } = require("js-sha256");
 
-const {getAllData, getDataFromId, addData } = require(`./dbMethod`);
+const {getAllData, getDataFromKey, addData } = require(`./dbMethod`);
 const accountModel = require('./accountModel');
 
 
 async function isAlreadyExistsInDB(username) {
-    let response = await getDataFromId(accountModel, "username", username);
+    let response = await getDataFromKey(accountModel, "username", username);
     if (response.statusCode == 200) {
         let accounts = response.body
         if (accounts.length)
@@ -73,7 +73,7 @@ async function signUp(username, password) {
 }
 
 async function signIn(username, password) {
-    let response = await getDataFromId(accountModel, "username", username);
+    let response = await getDataFromKey(accountModel, "username", username);
     if (response.statusCode == 200) {
         let accounts = response.body
         if (accounts.length) {
@@ -95,7 +95,7 @@ async function getAccounts()
 }
 async function getAccount(username)
 {
-    return await getDataFromId(accountModel, "username", username)
+    return await getDataFromKey(accountModel, "username", username)
 }
 
 

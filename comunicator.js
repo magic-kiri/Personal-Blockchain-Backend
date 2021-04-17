@@ -48,7 +48,19 @@ function loadAccounts() {
 }
 
 async function loadTransactions(){
-    
+    addressList.forEach(async (ip) => {
+        try {
+            fetch(`http://${ip}:${port}/accounts`)
+                .then(res => res.json())
+                .then(accounts => {
+                    accounts.forEach((account) => addAccount(account))
+                })
+                .catch(err => { })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    })
 }
 
 async function comunicatorInit() {

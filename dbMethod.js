@@ -7,7 +7,7 @@ async function getAllData(collection) {
     catch (err) { return { statusCode: 400, body: `Error from getting Data of ${collection}` } }
 }
 
-async function getDataFromId(collection, keyName, keyValue) {
+async function getDataFromKey(collection, keyName, keyValue) {
     try {
         let query = { [keyName]: keyValue }
         let response = await collection.find(query)
@@ -38,4 +38,4 @@ async function count(collection) {
     }
 }
 
-module.exports = { getAllData, getDataFromId, addData ,count }
+module.exports = { getAllData, getDataFromKey, addData ,count }

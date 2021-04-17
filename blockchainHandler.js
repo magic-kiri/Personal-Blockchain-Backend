@@ -3,7 +3,7 @@
 const { sha256 } = require('js-sha256');
 const Block = require('./BlockModel');
 const { getAllChain } = require('./comunicator');
-const { getAllData, getDataFromId, addData, count } = require(`./dbMethod`);
+const { getAllData, getDataFromKey, addData, count } = require(`./dbMethod`);
 
 async function getChain()
 {
@@ -12,7 +12,7 @@ async function getChain()
 
 async function getBlock(index)
 {
-    return await getDataFromId(Block, "_id", index)
+    return await getDataFromKey(Block, "_id", index)
 }
 
 async function getChainLength()
