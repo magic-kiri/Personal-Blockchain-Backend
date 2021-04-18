@@ -1,20 +1,13 @@
+
 const express = require('express');
 const cors = require('cors')
 const http = require('http')
 const mongoose = require('mongoose');
 
-// const path = require('path');
-// const bodyParser = require('body-parser');
-// const json = require('json');
-// const logger = require('logger');
-// const methodOverride = require('method-override');
-// const urlencoded = require('url');
-// const sha256 = require('js-sha256')
-
 const accountHandler = require('./accountHandler')
 const transactionHandler = require('./transactionHandler')
-const { comunicatorInit } = require('./comunicator');
 const blockchainHandler = require('./blockchainHandler');
+
 const { Account } = require('./account')
 
 
@@ -52,7 +45,7 @@ app.use(cors())
 // app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function (req, res) {
-    res.send("Welcome to Personal Blockchain!");
+    res.json("Welcome to Personal Blockchain!");
 });
 
 
@@ -68,20 +61,22 @@ app.get('/', function (req, res) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 app.post('/verify_transaction', async (req, res) => {
-    await accountHandler.addAccount(req.body.account)
-    const response = await transactionHandler.verifyTransaction(req.body.transaction, req.body.account.publicKey)
-    res.status(response.statusCode).send(response.body)
+    let packet = req.body
+    // delete packet._id
+    // console.log(packet)
+    const response = await transactionHandler.verifyTransaction(packet)
+    res.status(response.statusCode).json(response.body)
 })
 
 // this adds transaction to the ledger...
 app.post('/add_transaction', async (req, res) => {
     const response = await transactionHandler.createTransaction(req.body, loggedAccount, userPassword)
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 
 app.get('/transactions',async (req,res)=>{
     const response = await transactionHandler.getTransactions()
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,9 +89,9 @@ app.get('/transactions',async (req,res)=>{
 // This is an API to know that any user is signed in or not?
 app.get('/is_log_in', (req, res) => {
     if (loggedAccount == null)
-        res.status(200).send({ loggedIn: false, username: null })
+        res.status(200).json({ loggedIn: false, username: null })
     else
-        res.status(200).send({ loggedIn: true, username: loggedAccount.getUsername() })
+        res.status(200).json({ loggedIn: true, username: loggedAccount.getUsername() })
 })
 
 // This is an API for sign_up
@@ -104,7 +99,7 @@ app.get('/is_log_in', (req, res) => {
 app.post('/sign_up', async (req, res) => {
     console.log(req.body)
     const response = await accountHandler.signUp(req.body.username, req.body.password)
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 
 // This is an API for sign_in
@@ -116,40 +111,40 @@ app.post('/sign_in', async (req, res) => {
         loggedAccount = new Account(account.username, account.passHash, account.publicKey, account.encryptedPrivateKey, account.timestamp)
         userPassword = req.body.password
     }
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 // This API is to log out from current user
 app.get('/log_out', (req, res) => {
     loggedAccount = null
     userPassword = null
-    res.status(200).send("Logged-out successfully!")
+    res.status(200).json("Logged-out successfully!")
 })
 // The API provides current users public key and private key
 app.post('/get_keys', (req, res) => {
 
     if (loggedAccount == null)
-        res.status(204).send("You have to log-in first!")
+        res.status(204).json("You have to log-in first!")
     else if (req.body.password == userPassword) {
         const publicKey = loggedAccount.getPublicKey()
         const privateKey = loggedAccount.getPrivateKey(userPassword)
-        res.status(200).send({ publicKey: publicKey, privateKey: privateKey })
+        res.status(200).json({ publicKey: publicKey, privateKey: privateKey })
     }
     else
-        res.status(401).send("Password didn't matched!")
+        res.status(401).json("Password didn't matched!")
 })
 // This recieves an account and adds in its own db
 app.post('/add_account', async (req, res) => {
     const response = await accountHandler.addAccount(req.body)
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 app.get('/accounts', async (req, res) => {
     const response = await accountHandler.getAccounts()
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 
 app.get('/account/:username', async (req, res) => {
     const response = await accountHandler.getAccount(req.params.username)
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,33 +155,29 @@ app.get('/account/:username', async (req, res) => {
 
 app.get('/blockchain', async function (req, res) {
     const response = await blockchainHandler.getChain()
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 });
 
 // Get a certain block with index
 app.get('/blockchain/:index', async function (req, res) {
     const response = await blockchainHandler.getBlock(req.params.index)
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 });
 
 // Get a certain block with index
 app.get('/get_updated', async function (req, res) {
     const response = await blockchainHandler.getUpdated()
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 });
 
 app.post('/add_block', async (req, res) => {
     const response = await blockchainHandler.addBlock(req.body)
-    res.status(response.statusCode).send(response.body)
+    res.status(response.statusCode).json(response.body)
 })
 
 
 
 async function appStart() {
-    
-    
-    accountHandler.init()
-    comunicatorInit()
     setTimeout(()=>{blockchainHandler.init()},5000)
 }
 
@@ -196,6 +187,4 @@ appStart()
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port' + app.get('port'));
 });
-
-
 

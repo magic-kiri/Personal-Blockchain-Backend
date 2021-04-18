@@ -1,34 +1,30 @@
 
 const fetch = require('node-fetch');
 const { addAccount } = require('./accountHandler');
+const { postMethod } = require('./restMethod')
 
+var ownIpAddress = null
 var liveHosts = new Set()
+
 // This is a list where we will knock to fetch data...
 var addressList = []
-for (i = 100; i < 110; i++)
-    addressList.push(`192.168.0.${i}`)
 
 const port = 4000
 const searchInterval = 30
 
 function isNodeAlive(ip) {
     fetch(`http://${ip}:${port}`)
-        .catch((e) => { })
-        .then(res => res.text())
-        .catch((e) => { })
+        .then(res => res.json())
         .then((text) => {
             if (text == 'Welcome to Personal Blockchain!')
-                liveHosts.add(ip), console.log(ip)
+                liveHosts.add(ip), console.log('liveHost: ' + ip)
         })
         .catch((e) => { })
 }
 
 async function discoverliveHosts() {
     liveHosts.clear();
-    addressList.forEach(async function (ip) {
-        isNodeAlive(ip)
-    })
-
+    addressList.forEach((ip) => isNodeAlive(ip))
 }
 
 function loadAccounts() {
@@ -47,13 +43,22 @@ function loadAccounts() {
     })
 }
 
-async function loadTransactions(){
+function loadTransactions() {
     addressList.forEach(async (ip) => {
         try {
-            fetch(`http://${ip}:${port}/accounts`)
+            fetch(`http://${ip}:${port}/transactions`)
                 .then(res => res.json())
-                .then(accounts => {
-                    accounts.forEach((account) => addAccount(account))
+                .then(async (transactions) => {
+                    for (let txn of transactions) {
+                        delete txn._id
+                        try {
+                            postMethod(ownIpAddress, port, 'verify_transaction', txn)
+                            // transactionHandler.verifyTransaction(txn,txn.body.ownersPublicKey)
+                        }
+                        catch (err) {
+                            console.log(err)
+                        }
+                    }
                 })
                 .catch(err => { })
         }
@@ -63,25 +68,12 @@ async function loadTransactions(){
     })
 }
 
-async function comunicatorInit() {
-    discoverliveHosts()
-    loadAccounts()
-    loadTransactions()
-    setInterval(function () { discoverliveHosts() }, searchInterval * 1000);
-}
-
-
-
 
 // This function propagates the packet of transaction to all the alive host in the LAN
 async function propagatePacket(packet) {
-    liveHosts.forEach( (ip) => {
+    liveHosts.forEach((ip) => {
         try {
-            fetch(`http://${ip}:${port}/verify_transaction`, {
-                method: 'post',
-                body: JSON.stringify(packet),
-                headers: { 'Content-Type': 'application/json' },
-            })
+            postMethod(ip, port, 'verify_Transaction', packet)
         }
         catch (err) {
             console.log(`${ip} is offline!!`)
@@ -92,14 +84,13 @@ async function propagatePacket(packet) {
 
 async function getAllChain(len) {
     let chains = new Set()
-    
-    for(let ip of liveHosts) {
+
+    for (let ip of liveHosts) {
         try {
             let res = await fetch(`http://${ip}:${port}/blockchain`)
             let chain = await res.json()
-            // console.log(chain)
-                if (chain.length > len)
-                   chains.add(chain)
+            if (chain.length > len)
+                chains.add(chain)
         }
         catch (err) {
             // console.log(err)
@@ -109,5 +100,30 @@ async function getAllChain(len) {
 }
 
 
+async function comunicatorLoader() {
+    // Setting own IP address
+    for (i = 100; i < 110; i++) {
+        ip = ownIpAddress.substring(0, ownIpAddress.length - 3)
+        addressList.push(ip + i)
+    }
+    discoverliveHosts()
+    loadAccounts() // loading all local account
+    loadTransactions() // loading all local transactions
 
-module.exports = { comunicatorInit, propagatePacket, getAllChain };
+    setInterval(function () { discoverliveHosts() }, searchInterval * 1000) // discovering aliveHosts after few moments
+}
+
+function comunicatorInit() {
+    try {
+        require('dns').lookup(require('os').hostname(), async function (err, add, fam) {
+            ownIpAddress = add.toString()
+            comunicatorLoader()
+        })
+    } catch (err) {
+        console.log(`unable to get IP address of this device`)
+        console.log(err)
+    }
+}
+comunicatorInit()
+
+module.exports = { comunicatorLoader, propagatePacket, getAllChain, loadTransactions };

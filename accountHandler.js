@@ -1,11 +1,8 @@
 
-// const findDevice = require('local-devices');
 const { CryptoSecurity } = require("./security")
 const { Account } = require("./account")
-const { comunicatorInit } = require('./comunicator');
 const { sha256 } = require("js-sha256");
-
-const {getAllData, getDataFromKey, addData } = require(`./dbMethod`);
+const { getAllData, getDataFromKey, addData } = require(`./dbMethod`);
 const accountModel = require('./accountModel');
 
 
@@ -78,8 +75,9 @@ async function signIn(username, password) {
         let accounts = response.body
         if (accounts.length) {
             let passHash = sha256(password)
-            if (passHash == accounts[0].passHash)
+            if (passHash == accounts[0].passHash) {
                 return { statusCode: 200, body: accounts[0] }
+            }
             else
                 return { statusCode: 406, body: 'Password didn\'t matched!' }
         }
@@ -89,19 +87,19 @@ async function signIn(username, password) {
         return { statusCode: response.statusCode, body: 'No such server!' }
 }
 
-async function getAccounts()
-{
+async function getAccounts() {
     return await getAllData(accountModel)
 }
-async function getAccount(username)
-{
+async function getAccount(username) {
     return await getDataFromKey(accountModel, "username", username)
 }
 
 
-async function init()
-{
-    comunicatorInit()
+
+async function init() {
+
 }
 
-module.exports = { signUp, signIn, addAccount, getAccounts , getAccount,init }
+module.exports = { signUp, signIn, addAccount, getAccounts, getAccount, init }
+
+
