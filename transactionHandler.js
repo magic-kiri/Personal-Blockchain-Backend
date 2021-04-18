@@ -65,12 +65,12 @@ async function verifyTransaction(packet) {
     // console.log('verify............................')
     // console.log(sha256(JSON.stringify(packet.signature)))
     // console.log('.................................')
-    
+
     let transaction = packet.transaction
     let signature = packet.signature
     let publicKey = transaction.creatorsPublicKey
     // console.log(transaction)
-    // console.log("/////////")
+
     // console.log(signature)
     // console.log(publicKey)
     const cryptoSecurity = new CryptoSecurity()
