@@ -1,5 +1,6 @@
 
 const { Console } = require('console');
+const { sha256 } = require('js-sha256');
 const fetch = require('node-fetch');
 const { addAccount } = require('./accountHandler');
 const { postMethod ,getMethod} = require('./restMethod')
@@ -14,6 +15,7 @@ const port = 4000
 const searchInterval = 30
 
 function isNodeAlive(ip) {
+    // console.log(ip)
     getMethod(ip,port,``,function callback(text){
         if(text =='Welcome to Personal Blockchain!')
                 postMethod(ownIpAddress,port,`add_ip`,{ip: ip})
@@ -42,18 +44,21 @@ function loadAccounts() {
     addressList.forEach((ip)=>{
         getMethod(ip,port,`accounts`,  function callback(accounts){
             for(let account of accounts)
-                postMethod(ip,port,`add_account`,account)
+                postMethod(ownIpAddress,port,`add_account`,account)
         } )
     })
 }
 
 function loadTransactions() {
+    console.log('called')
     addressList.forEach((ip)=>{
         getMethod(ip,port,`transactions`,  function callback(transactions){
             for(let txn of transactions)
             {
-                delete txn._id
-                postMethod(ip,port,`verify_transaction`,txn)
+                // console.log('load '+ ip)
+                // console.log(sha256(JSON.stringify(txn.signature)))
+                const packet = {transaction: txn.transaction, signature: txn.signature}
+                postMethod(ownIpAddress,port,`verify_transaction`,packet)
             }
         } )
     })
