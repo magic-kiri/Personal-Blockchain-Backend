@@ -50,14 +50,13 @@ function loadAccounts() {
 }
 
 function loadTransactions() {
-    console.log('called')
     addressList.forEach((ip)=>{
         getMethod(ip,port,`transactions`,  function callback(transactions){
             for(let txn of transactions)
             {
-                console.log('load '+ ip)
-                console.log(txn.signature)
-                console.log(sha256(JSON.stringify(txn.signature)))
+                // console.log('load '+ ip)
+                // console.log(txn.signature)
+                // console.log(sha256(JSON.stringify(txn.signature)))
                 const packet = {transaction: txn.transaction, signature: txn.signature}
                 postMethod(ownIpAddress,port,`verify_transaction`,packet)
             }

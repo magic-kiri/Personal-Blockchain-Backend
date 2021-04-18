@@ -19,10 +19,10 @@ async function createTransaction(transaction, account, password) {
         if (!privateKey)
             return { statusCode: 409, body: "Unable to decrypt with the password!" }
         const signature = cryptoSecurity.signing(transaction.toString(), privateKey, password)
-        
-        const packet = { transaction: transaction, signature: signature }
-        
+
+        const packet = { transaction: transaction, signature: JSON.stringify(signature) }
         propagatePacket(packet)
+        // return {statusCode:200 , body: 'this will be added'}
         return await verifyTransaction(packet)
     }
     catch (er) {
@@ -62,20 +62,13 @@ async function addInPool(txn) {
 }
 
 async function verifyTransaction(packet) {
-    // console.log('verify............................')
-    // console.log(sha256(JSON.stringify(packet.signature)))
-    // console.log('.................................')
-
     let transaction = packet.transaction
-    let signature = packet.signature
     let publicKey = transaction.creatorsPublicKey
-    // console.log(transaction)
-
-    // console.log(signature)
-    // console.log(publicKey)
+    
+    let signature = JSON.parse(packet.signature)
     const cryptoSecurity = new CryptoSecurity()
     let isVerified = cryptoSecurity.verify(Buffer.from(signature), transaction.toString(), publicKey)
-    console.log(isVerified)
+    // console.log(isVerified)
     if (isVerified) {
         let res = await addInPool(packet)
         return res

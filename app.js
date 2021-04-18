@@ -62,8 +62,6 @@ app.get('/', function (req, res) {
 
 app.post('/verify_transaction', async (req, res) => {
     let packet = req.body
-    // delete packet._id
-    // console.log(packet)
     const response = await transactionHandler.verifyTransaction(packet)
     res.status(response.statusCode).json(response.body)
 })
