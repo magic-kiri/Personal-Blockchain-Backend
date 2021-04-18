@@ -1,7 +1,8 @@
 
+const { Console } = require('console');
 const fetch = require('node-fetch');
 const { addAccount } = require('./accountHandler');
-const { postMethod } = require('./restMethod')
+const { postMethod ,getMethod} = require('./restMethod')
 
 var ownIpAddress = null
 var liveHosts = new Set()
@@ -13,13 +14,23 @@ const port = 4000
 const searchInterval = 30
 
 function isNodeAlive(ip) {
-    fetch(`http://${ip}:${port}`)
-        .then(res => res.json())
-        .then((text) => {
-            if (text == 'Welcome to Personal Blockchain!')
-                liveHosts.add(ip), console.log('liveHost: ' + ip)
-        })
-        .catch((e) => { })
+    getMethod(ip,port,``,function callback(text){
+        if(text =='Welcome to Personal Blockchain!')
+                postMethod(ownIpAddress,port,`add_ip`,{ip: ip})
+    })
+}
+
+function addIpAddress(json)
+{
+    try{
+        liveHosts.add(json.ip)
+        console.log(`liveHost: ` + json.ip)
+        return {statusCode: 200,body: json.ip}
+    }
+    catch(err){
+        return {statusCode: 200,body: err}
+    }
+        
 }
 
 async function discoverliveHosts() {
@@ -28,43 +39,23 @@ async function discoverliveHosts() {
 }
 
 function loadAccounts() {
-    addressList.forEach(async (ip) => {
-        try {
-            fetch(`http://${ip}:${port}/accounts`)
-                .then(res => res.json())
-                .then(accounts => {
-                    accounts.forEach((account) => addAccount(account))
-                })
-                .catch(err => { })
-        }
-        catch (err) {
-            console.log(err)
-        }
+    addressList.forEach((ip)=>{
+        getMethod(ip,port,`accounts`,  function callback(accounts){
+            for(let account of accounts)
+                postMethod(ip,port,`add_account`,account)
+        } )
     })
 }
 
 function loadTransactions() {
-    addressList.forEach(async (ip) => {
-        try {
-            fetch(`http://${ip}:${port}/transactions`)
-                .then(res => res.json())
-                .then(async (transactions) => {
-                    for (let txn of transactions) {
-                        delete txn._id
-                        try {
-                            postMethod(ownIpAddress, port, 'verify_transaction', txn)
-                            // transactionHandler.verifyTransaction(txn,txn.body.ownersPublicKey)
-                        }
-                        catch (err) {
-                            console.log(err)
-                        }
-                    }
-                })
-                .catch(err => { })
-        }
-        catch (err) {
-            console.log(err)
-        }
+    addressList.forEach((ip)=>{
+        getMethod(ip,port,`transactions`,  function callback(transactions){
+            for(let txn of transactions)
+            {
+                delete txn._id
+                postMethod(ip,port,`verify_transaction`,txn)
+            }
+        } )
     })
 }
 
@@ -82,6 +73,7 @@ async function propagatePacket(packet) {
     })
 }
 
+/////////////////// THIS IS A SENSITIVE PORTION //////////////
 async function getAllChain(len) {
     let chains = new Set()
 
@@ -114,6 +106,7 @@ async function comunicatorLoader() {
 }
 
 function comunicatorInit() {
+
     try {
         require('dns').lookup(require('os').hostname(), async function (err, add, fam) {
             ownIpAddress = add.toString()
@@ -126,4 +119,4 @@ function comunicatorInit() {
 }
 comunicatorInit()
 
-module.exports = { comunicatorLoader, propagatePacket, getAllChain, loadTransactions };
+module.exports = { comunicatorLoader, propagatePacket, getAllChain, loadTransactions, addIpAddress };

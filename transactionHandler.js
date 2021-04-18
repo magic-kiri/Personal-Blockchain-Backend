@@ -62,7 +62,6 @@ async function addInPool(txn) {
 }
 
 async function verifyTransaction(packet) {
-    
     let transaction = packet.transaction
     let signature = packet.signature
     let publicKey = transaction.creatorsPublicKey

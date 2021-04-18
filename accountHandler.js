@@ -102,4 +102,3 @@ async function init() {
 
 module.exports = { signUp, signIn, addAccount, getAccounts, getAccount, init }
 
-

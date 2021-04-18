@@ -8,14 +8,22 @@ async function postMethod(ip, port, address, data) {
             headers: { 'Content-Type': 'application/json' },
         })
     } catch (err) {
-        console.log('error hocche : '  +  err)
+        // console.log('error hocche : '  +  err)
     }
 }
 
 
-function getMethod(ip,port,address, callback){
-    
+function getMethod(ip, port, address, callback) {
+    try {
+        fetch(`http://${ip}:${port}/${address}`)
+            .then(res => res.json())
+            .then(body => callback(body))
+            .catch(err => { })
+    } catch (err) {
+        console.log('error hocche : ' + err)
+    }
 }
 
-module.exports = {postMethod}
+
+module.exports = { postMethod, getMethod }
 

@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const accountHandler = require('./accountHandler')
 const transactionHandler = require('./transactionHandler')
 const blockchainHandler = require('./blockchainHandler');
-
+const comunicator = require('./comunicator')
 const { Account } = require('./account')
 
 
@@ -83,6 +83,12 @@ app.get('/transactions',async (req,res)=>{
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
+app.post('/add_ip',async (req,res)=>{
+    const response = comunicator.addIpAddress(req.body)
+    res.status(response.statusCode).json(response.body)
+})
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////// ACCOUNT RELATED API ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +103,6 @@ app.get('/is_log_in', (req, res) => {
 // This is an API for sign_up
 // Returns a string as response
 app.post('/sign_up', async (req, res) => {
-    console.log(req.body)
     const response = await accountHandler.signUp(req.body.username, req.body.password)
     res.status(response.statusCode).json(response.body)
 })
@@ -132,11 +137,13 @@ app.post('/get_keys', (req, res) => {
     else
         res.status(401).json("Password didn't matched!")
 })
-// This recieves an account and adds in its own db
+
+// This recieves an prepared account and adds in its own db
 app.post('/add_account', async (req, res) => {
     const response = await accountHandler.addAccount(req.body)
     res.status(response.statusCode).json(response.body)
 })
+
 app.get('/accounts', async (req, res) => {
     const response = await accountHandler.getAccounts()
     res.status(response.statusCode).json(response.body)
