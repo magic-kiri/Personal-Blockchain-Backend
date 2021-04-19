@@ -62,10 +62,10 @@ function loadTransactions() {
 
 
 // This function propagates the packet of transaction to all the alive host in the LAN
-async function propagatePacket(packet) {
+function propagatePacket(packet,address) {
     liveHosts.forEach((ip) => {
         try {
-            postMethod(ip, port, 'verify_Transaction', packet)
+            postMethod(ip, port, address, packet)
         }
         catch (err) {
             console.log(`${ip} is offline!!`)

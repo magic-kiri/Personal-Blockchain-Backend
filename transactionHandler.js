@@ -21,7 +21,7 @@ async function createTransaction(transaction, account, password) {
         const signature = cryptoSecurity.signing(transaction.toString(), privateKey, password)
 
         const packet = { transaction: transaction, signature: JSON.stringify(signature) }
-        propagatePacket(packet)
+        propagatePacket(packet,`verify_transaction`)
         // return {statusCode:200 , body: 'this will be added'}
         return await verifyTransaction(packet)
     }

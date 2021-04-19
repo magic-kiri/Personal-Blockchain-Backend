@@ -1,4 +1,32 @@
 
+BLOCK PACKET:
+{
+    block   
+        {
+            _id,
+            transactions,
+            timestamp,
+            previousHash,
+            publicKey,
+            limit,
+            _v
+        }
+    signature {}
+}
+
+TRANSACTION PACKET:
+{
+    transaction
+        {
+            creatorsPublicKey,
+            timestamp,
+            WHATEVER
+        }
+    signature
+}
+
+
+
 
 UserAccount:
 
