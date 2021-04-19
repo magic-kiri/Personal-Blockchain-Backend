@@ -31,12 +31,18 @@ async function addBlock(block) {
     return await addData(Block, block)
 }
 
-async function validateChain(){
-    const chain = getChain()
-    for(i=1;i<chain.length;i++)
-
-        if(sha256(JSON.stringify(block[i-1])) != chain[i].previousHash)
+async function validateChain() {
+    const res = await getChain()
+    if(res.statusCode!=200)
+        return false
+    const chain = res.body
+    // console.log(chain)
+    for (i = 1; i < chain.length; i++) {
+        // console.log(sha256(JSON.stringify(chain[i - 1])))
+        // console.log(chain[i].previousHash)
+        if (sha256(JSON.stringify(chain[i - 1])) != chain[i].previousHash)
             return false
+    }
     return true
 }
 
@@ -62,13 +68,13 @@ async function appendBlockchain(targetChain, cnt = 3) {
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length - 1]
     let previousHash = sha256(JSON.stringify(lastBlock))
-        console.log("HASH:")
-        console.log(previousHash)
+    // console.log("HASH:")
+    // console.log(previousHash)
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
         let previousHash = sha256(JSON.stringify(lastBlock))
-        if (previousHash == currentBlock.previousHash ) {
-            console.log("genjam")
+        if (previousHash == currentBlock.previousHash) {
+            // console.log("genjam")
             let res = await addBlock(currentBlock)
             if (res.statusCode != 200 && cnt > 0) {
                 ////// WARNING ::: this may cause infinite loop
@@ -95,7 +101,7 @@ async function getUpdated() {
         await createGenesisBlock()
         currentChainLength = 1
     }
-    let adjacentChains = await getAllChain(currentChainLength-1)
+    let adjacentChains = await getAllChain(currentChainLength - 1)
     let largestChain = []
     for (let chain of adjacentChains) {
         // This takes the largest chain of live hosts
@@ -133,10 +139,10 @@ function verifyBlock(block, sign, publicKey) {
 async function init() {
 
     let othersConsensusTime = await searchForConsensus()
-    let lastBlock =  await getUpdated()
-    console.log('Chain Validity: '+  await validateChain())
+    let lastBlock = await getUpdated()
+    console.log('Chain Validity: ' + await validateChain())
 
-    if(othersConsensusTime)
+    if (othersConsensusTime)
         setConsensusTime(othersConsensusTime)
     console.log('Consensus Time: ' + getConsensusTime())
 }
