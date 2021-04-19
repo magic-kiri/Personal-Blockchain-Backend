@@ -159,6 +159,7 @@ app.get('/account/:username', async (req, res) => {
 
 
 app.get('/blockchain', async function (req, res) {
+    console.log('blockchain dekhte chay')
     const response = await blockchainHandler.getChain()
     res.status(response.statusCode).json(response.body)
 });
