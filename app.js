@@ -180,10 +180,18 @@ app.post('/add_block', async (req, res) => {
     res.status(response.statusCode).json(response.body)
 })
 
+app.post('/propose_block', async (req, res) => {
+    const response = await blockchainHandler.proposeBlock(req.body)
+    res.status(response.statusCode).json(response.body)
+})
+
+app.get('/consensus_time', (req,res)=>{
+    res.status(200).json(blockchainHandler.getConsensusTime())
+})
 
 
 async function appStart() {
-    setTimeout(()=>{blockchainHandler.init()},5000)
+    setTimeout(()=>{blockchainHandler.init()},4000)
 }
 
 appStart()

@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-async function postMethod(ip, port, address, data) {
+function postMethod(ip, port, address, data) {
     try {
         fetch(`http://${ip}:${port}/${address}`, {
             method: 'post',
@@ -24,6 +24,17 @@ function getMethod(ip, port, address, callback) {
     }
 }
 
+async function syncGet(ip,port,address)
+{
+    try{
+        const res = await fetch(`http://${ip}:${port}/${address}`)
+        return {statusCode:200, body: await res.json()}
+    }catch (err){
+        console.log('Erro hocche: '+ err)
+        return {statusCode: 404, body: err }
+    }
+}
 
-module.exports = { postMethod, getMethod }
+
+module.exports = { postMethod, getMethod,syncGet}
 

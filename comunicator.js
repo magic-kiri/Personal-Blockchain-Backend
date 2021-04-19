@@ -1,9 +1,6 @@
 
-const { Console } = require('console');
-const { sha256 } = require('js-sha256');
 const fetch = require('node-fetch');
-const { addAccount } = require('./accountHandler');
-const { postMethod ,getMethod} = require('./restMethod')
+const { postMethod, getMethod, syncGet } = require('./restMethod')
 
 var ownIpAddress = null
 var liveHosts = new Set()
@@ -16,23 +13,22 @@ const searchInterval = 30
 
 function isNodeAlive(ip) {
     // console.log(ip)
-    getMethod(ip,port,``,function callback(text){
-        if(text =='Welcome to Personal Blockchain!')
-                postMethod(ownIpAddress,port,`add_ip`,{ip: ip})
+    getMethod(ip, port, ``, function callback(text) {
+        if (text == 'Welcome to Personal Blockchain!')
+            postMethod(ownIpAddress, port, `add_ip`, { ip: ip })
     })
 }
 
-function addIpAddress(json)
-{
-    try{
+function addIpAddress(json) {
+    try {
         liveHosts.add(json.ip)
         console.log(`liveHost: ` + json.ip)
-        return {statusCode: 200,body: json.ip}
+        return { statusCode: 200, body: json.ip }
     }
-    catch(err){
-        return {statusCode: 200,body: err}
+    catch (err) {
+        return { statusCode: 200, body: err }
     }
-        
+
 }
 
 async function discoverliveHosts() {
@@ -41,26 +37,25 @@ async function discoverliveHosts() {
 }
 
 function loadAccounts() {
-    addressList.forEach((ip)=>{
-        getMethod(ip,port,`accounts`,  function callback(accounts){
-            for(let account of accounts)
-                postMethod(ownIpAddress,port,`add_account`,account)
-        } )
+    addressList.forEach((ip) => {
+        getMethod(ip, port, `accounts`, function callback(accounts) {
+            for (let account of accounts)
+                postMethod(ownIpAddress, port, `add_account`, account)
+        })
     })
 }
 
 function loadTransactions() {
-    addressList.forEach((ip)=>{
-        getMethod(ip,port,`transactions`,  function callback(transactions){
-            for(let txn of transactions)
-            {
+    addressList.forEach((ip) => {
+        getMethod(ip, port, `transactions`, function callback(transactions) {
+            for (let txn of transactions) {
                 // console.log('load '+ ip)
                 // console.log(txn.signature)
                 // console.log(sha256(JSON.stringify(txn.signature)))
-                const packet = {transaction: txn.transaction, signature: txn.signature}
-                postMethod(ownIpAddress,port,`verify_transaction`,packet)
+                const packet = { transaction: txn.transaction, signature: txn.signature }
+                postMethod(ownIpAddress, port, `verify_transaction`, packet)
             }
-        } )
+        })
     })
 }
 
@@ -81,17 +76,13 @@ async function propagatePacket(packet) {
 /////////////////// THIS IS A SENSITIVE PORTION //////////////
 async function getAllChain(len) {
     let chains = new Set()
-
     for (let ip of liveHosts) {
-        try {
-            let res = await fetch(`http://${ip}:${port}/blockchain`)
-            let chain = await res.json()
-            if (chain.length > len)
-                chains.add(chain)
-        }
-        catch (err) {
-            // console.log(err)
-        }
+        let res = await syncGet(ip, port, 'blockchain')
+        if (res.statusCode != 200)
+            continue
+        chain = res.body
+        if (chain.length > len)
+            chains.add(chain)
     }
     return chains
 }
@@ -124,4 +115,25 @@ function comunicatorInit() {
 }
 comunicatorInit()
 
-module.exports = { comunicatorLoader, propagatePacket, getAllChain, loadTransactions, addIpAddress };
+
+async function searchForConsensus() {
+    let consensusTime = null
+    for (let ip of liveHosts) {
+        if(ip==ownIpAddress)
+            continue
+        let res = await syncGet(ip, port, `consensus_time`)
+        if(res.statusCode==200)
+        {
+            if(consensusTime && consensusTime<res.body)
+            {
+                console.log('WARNING:: consensus Time is different in different hosts')
+                consensusTime = res.body
+            }
+            else 
+                consensusTime = res.body
+        }
+    }
+    return consensusTime
+}
+
+module.exports = { comunicatorLoader, propagatePacket, getAllChain, loadTransactions, addIpAddress, searchForConsensus };
