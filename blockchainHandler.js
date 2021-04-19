@@ -61,13 +61,12 @@ async function appendBlockchain(targetChain, cnt = 3) {
     let response = await getChain()
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length - 1]
-
+    let previousHash = sha256(JSON.stringify(lastBlock))
+        console.log("HASH:")
+        console.log(previousHash)
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
         let previousHash = sha256(JSON.stringify(lastBlock))
-        console.log("HASH:")
-        console.log(previousHash)
-        console.log(currentBlock.previousHash)
         if (previousHash == currentBlock.previousHash ) {
             console.log("genjam")
             let res = await addBlock(currentBlock)
@@ -96,7 +95,7 @@ async function getUpdated() {
         await createGenesisBlock()
         currentChainLength = 1
     }
-    let adjacentChains = await getAllChain(currentChainLength)
+    let adjacentChains = await getAllChain(currentChainLength-1)
     let largestChain = []
     for (let chain of adjacentChains) {
         // This takes the largest chain of live hosts
