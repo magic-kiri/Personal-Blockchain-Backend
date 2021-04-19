@@ -34,6 +34,7 @@ async function addBlock(block) {
 async function validateChain(){
     const chain = getChain()
     for(i=1;i<chain.length;i++)
+
         if(sha256(JSON.stringify(block[i-1])) != chain[i].previousHash)
             return false
     return true
@@ -64,8 +65,11 @@ async function appendBlockchain(targetChain, cnt = 3) {
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
         let previousHash = sha256(JSON.stringify(lastBlock))
-        
+        console.log("HASH:")
+        console.log(previousHash)
+        console.log(currentBlock.previousHash)
         if (previousHash == currentBlock.previousHash ) {
+            console.log("genjam")
             let res = await addBlock(currentBlock)
             if (res.statusCode != 200 && cnt > 0) {
                 ////// WARNING ::: this may cause infinite loop
