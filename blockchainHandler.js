@@ -6,9 +6,9 @@ const { getTransactions, removeTransaction } = require('./transactionHandler');
 const { sha256 } = require('js-sha256');
 
 
-const checkIntervalTime = 15
-const firstPhase = 45
-const blockDuration = 30 + firstPhase
+const checkIntervalTime = 10
+const firstPhase = 50
+const blockDuration = 40 + firstPhase
 
 var readyToMine = false
 
@@ -30,6 +30,10 @@ async function updateOptimalPacket(packet) {
 
         // const currentIp = packet.block.limit
         // const optimalIp = optimalPacket.block.limit
+        
+        console.log(limit)
+        console.log(optimalIp)
+        console.log(currentIp)
         if (limit < currentIp) {
             if ((optimalIp <= limit) || (currentIp < optimalIp))
                 optimalPacket = packet
