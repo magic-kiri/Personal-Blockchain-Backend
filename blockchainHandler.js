@@ -6,8 +6,8 @@ const { getTransactions, removeTransaction } = require('./transactionHandler');
 const { sha256 } = require('js-sha256');
 
 
-const checkIntervalTime = 20
-const firstPhase = 75
+const checkIntervalTime = 15
+const firstPhase = 45
 const blockDuration = 30 + firstPhase
 
 var readyToMine = false
@@ -47,6 +47,7 @@ async function blockManager() {
     const timeDifferece = currentTime - consensusTime
     
     if (timeDifferece < firstPhase * 1000) {
+        console.log("Phase 1")
         optimalPacket = null
         readyToMine = true
         return
@@ -54,7 +55,8 @@ async function blockManager() {
     if (readyToMine == false) return
     
     if ((firstPhase * 1000 < timeDifferece) && (timeDifferece < blockDuration * 1000)) {
-        // This is for block sharing 
+        // This is for block sharing
+        console.log("Phase 2") 
         if(ownPacket==null)
         {   
             ownPacket = await createMyPacket()
@@ -63,6 +65,7 @@ async function blockManager() {
         propagatePacket(optimalPacket, `propose_block`)
     }
     else {
+        console.log("Phase 3")
         consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
         readyToMine = false
         ownPacket = null
