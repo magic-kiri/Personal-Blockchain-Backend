@@ -52,7 +52,6 @@ async function blockManager() {
         
     if (timeDifferece < firstPhase * 1000) {
         console.log("Phase 1")
-        optimalPacket = null
         readyToMine = true
         return
     }
@@ -70,9 +69,6 @@ async function blockManager() {
     }
     else {
         console.log("Phase 3")
-        consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
-        readyToMine = false
-        ownPacket = null
         const block = optimalPacket
         const transactions = block.transactions
         if (0 < transactions.length) {
@@ -89,6 +85,9 @@ async function blockManager() {
             console.log(consensusTime)
             console.log("Not enough transaction!")
         }
+        readyToMine = false
+        ownPacket = null
+        optimalPacket = null
     }
 }
 
