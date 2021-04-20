@@ -6,9 +6,9 @@ const { getTransactions, removeTransaction } = require('./transactionHandler');
 const { sha256 } = require('js-sha256');
 
 
-const checkIntervalTime = 10
-const firstPhase = 15
-const blockDuration = 15 + firstPhase
+const checkIntervalTime = 20
+const firstPhase = 75
+const blockDuration = 30 + firstPhase
 
 var readyToMine = false
 
