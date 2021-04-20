@@ -1,20 +1,22 @@
 const { sha256 } = require('js-sha256');
 const Block = require('./BlockModel');
-const { getAllData, getDataFromKey, addData,count } = require(`./dbMethod`);
-const {getAllChain} = require('./comunicator')
-
-
-
+const { getAllData, getDataFromKey, addData, count } = require(`./dbMethod`);
+const { getAllChain } = require('./comunicator')
 
 
 async function validateChain() {
     const res = await getChain()
-    if(res.statusCode!=200)
+    if (res.statusCode != 200)
         return false
     const chain = res.body
     for (i = 1; i < chain.length; i++) {
-        if (sha256(JSON.stringify(chain[i - 1])) != chain[i].previousHash)
+        chain[i-1] = sortJSON(chain[i-1])
+
+        if (sha256(JSON.stringify(chain[i-1])) != chain[i].previousHash) {
+            // console.log(chain[i - 1])
+            // console.log(sha256(JSON.stringify(chain[i - 1])))
             return false
+        }
     }
     return true
 }
@@ -27,7 +29,7 @@ async function createGenesisBlock() {
         transactions: [],
         limit: 0
     }
-    let res = await addBlock(genesisBlock)
+    let res = await addBlock(sortJSON(genesisBlock))
     return res.body
 }
 
@@ -61,15 +63,15 @@ async function appendBlockchain(targetChain, cnt = 3) {
 
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
+        lastBlock = sortJSON(lastBlock)
         let previousHash = sha256(JSON.stringify(lastBlock))
-        if(previousHash != currentBlock.previousHash)
-        {
-            console.log(previousHash)
-            console.log(currentBlock.previousHash)
-            console.log(currentBlock)
-            console.log(lastBlock)
 
-        }
+        // if (previousHash != currentBlock.previousHash) {
+        //     console.log(previousHash)
+        //     console.log(currentBlock.previousHash)
+        //     console.log(currentBlock)
+        //     console.log(lastBlock)
+        // }
         if (previousHash == currentBlock.previousHash) {
             let res = await addBlock(currentBlock)
             if (res.statusCode != 200 && cnt > 0) {
@@ -86,7 +88,7 @@ async function appendBlockchain(targetChain, cnt = 3) {
         }
         lastBlock = currentBlock
     }
-    return { statusCode: 200, body: lastBlock, hashValue: sha256(JSON.stringify(lastBlock))  }
+    return { statusCode: 200, body: lastBlock, hashValue: sha256(JSON.stringify(lastBlock)) }
 }
 
 
@@ -107,5 +109,15 @@ async function addBlock(block) {
     return await addData(Block, block)
 }
 
+function sortJSON(unordered) {
+    const ordered = Object.keys(unordered).sort().reduce(
+        (obj, key) => {
+            obj[key] = unordered[key];
+            return obj;
+        },
+        {}
+    );
+    return unordered
+}
 
-module.exports = {addBlock,getChainLength,getBlock,getChain,getUpdated,validateChain}
+module.exports = { addBlock, getChainLength, getBlock, getChain, getUpdated, validateChain, sortJSON }

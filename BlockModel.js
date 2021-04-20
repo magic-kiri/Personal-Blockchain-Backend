@@ -7,7 +7,7 @@ var Block = new Schema({
     previousHash: {type:String,required: true},
     transactions: {type:Array, required: true},
     limit: {type: Number,required:true}
-},{_id:false,strict:true});
+},{_id:false,strict:true,versionKey: false});
 
 module.exports = mongoose.model('Block', Block);
 
