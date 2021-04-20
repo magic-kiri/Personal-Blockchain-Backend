@@ -62,12 +62,14 @@ async function blockManager() {
             for (let txn of transactions)
                 await removeTransaction(txn)
             lastBlock = block
-            consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
+           
         }
         else
         {
+            console.log(consensusTime)
             console.log("Not enough transaction!")
         }
+        consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
     }
 }
 
