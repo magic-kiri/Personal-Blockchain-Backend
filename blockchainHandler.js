@@ -45,6 +45,7 @@ async function updateOptimalPacket(packet) {
 async function blockManager() {
     const currentTime = new Date()
     const timeDifferece = currentTime - consensusTime
+    console.log(consensusTime)
     
     if (timeDifferece < firstPhase * 1000) {
         console.log("Phase 1")
@@ -120,8 +121,12 @@ async function proposePacket(packet) {
 async function init() {
     
     let othersConsensusTime = await searchForConsensus()    // searching for consesus time 
+    console.log(othersConsensusTime)
     if (othersConsensusTime)
-        setConsensusTime(othersConsensusTime)
+    {
+        setConsensusTime(new Date(othersConsensusTime))
+    }
+        
     console.log('Consensus Time: ' + getConsensusTime())
 
 

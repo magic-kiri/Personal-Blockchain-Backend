@@ -134,6 +134,7 @@ async function searchForConsensus() {
                 consensusTime = res.body
         }
     }
+    // console.log(consensusTime)
     return consensusTime
 }
 
