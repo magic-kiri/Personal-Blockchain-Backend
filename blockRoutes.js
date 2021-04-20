@@ -62,6 +62,14 @@ async function appendBlockchain(targetChain, cnt = 3) {
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
         let previousHash = sha256(JSON.stringify(lastBlock))
+        if(previousHash != currentBlock.previousHash)
+        {
+            console.log(previousHash)
+            console.log(currentBlock.previousHash)
+            console.log(currentBlock)
+            console.log(lastBlock)
+
+        }
         if (previousHash == currentBlock.previousHash) {
             let res = await addBlock(currentBlock)
             if (res.statusCode != 200 && cnt > 0) {
