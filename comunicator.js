@@ -137,4 +137,9 @@ async function searchForConsensus() {
     return consensusTime
 }
 
-module.exports = { comunicatorLoader, propagatePacket, getAllChain, loadTransactions, addIpAddress, searchForConsensus };
+function getOwnIp()
+{
+    return parseInt(ownIpAddress.substring(ownIpAddress.length-3))
+}
+
+module.exports = { getOwnIp,comunicatorLoader, propagatePacket, getAllChain, loadTransactions, addIpAddress, searchForConsensus };

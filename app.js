@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const accountHandler = require('./accountHandler')
 const transactionHandler = require('./transactionHandler')
 const blockchainHandler = require('./blockchainHandler');
+const blockRoutes = require('./blockRoutes')
 const comunicator = require('./comunicator')
 const { Account } = require('./account')
 
@@ -160,29 +161,29 @@ app.get('/account/:username', async (req, res) => {
 
 app.get('/blockchain', async function (req, res) {
     console.log('blockchain dekhte chay')
-    const response = await blockchainHandler.getChain()
+    const response = await blockRoutes.getChain()
     res.status(response.statusCode).json(response.body)
 });
 
 // Get a certain block with index
 app.get('/blockchain/:index', async function (req, res) {
-    const response = await blockchainHandler.getBlock(req.params.index)
+    const response = await blockRoutes.getBlock(req.params.index)
     res.status(response.statusCode).json(response.body)
 });
 
-// Get a certain block with index
+
 app.get('/get_updated', async function (req, res) {
-    const response = await blockchainHandler.getUpdated()
+    const response = await blockRoutes.getUpdated()
     res.status(response.statusCode).json(response.body)
 });
 
 app.post('/add_block', async (req, res) => {
-    const response = await blockchainHandler.addBlock(req.body)
+    const response = await blockRoutes.addBlock(req.body)
     res.status(response.statusCode).json(response.body)
 })
 
 app.post('/propose_block', async (req, res) => {
-    const response = await blockchainHandler.proposeBlock(req.body)
+    const response = await blockchainHandler.proposePacket(req.body)
     res.status(response.statusCode).json(response.body)
 })
 

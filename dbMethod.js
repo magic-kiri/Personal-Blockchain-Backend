@@ -38,4 +38,14 @@ async function count(collection) {
     }
 }
 
-module.exports = { getAllData, getDataFromKey, addData ,count }
+async function removeById(collection,id){
+    try{
+        let response = await collection.findByIdAndDelete(id) 
+        return { statusCode: 200 ,body: response}
+    }catch(err)
+    {
+        console.log(err)
+    }
+}
+
+module.exports = { getAllData, getDataFromKey, addData ,count,removeById }

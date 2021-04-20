@@ -1,6 +1,6 @@
 
 
-const { getAllData, getDataFromKey, addData } = require(`./dbMethod`);
+const { getAllData, getDataFromKey, addData ,removeById} = require(`./dbMethod`);
 var Pool = require('./transactionModel')
 const { propagatePacket } = require('./comunicator');
 const { CryptoSecurity } = require("./security");
@@ -68,7 +68,7 @@ async function verifyTransaction(packet) {
     let signature = JSON.parse(packet.signature)
     const cryptoSecurity = new CryptoSecurity()
     let isVerified = cryptoSecurity.verify(Buffer.from(signature), transaction.toString(), publicKey)
-    // console.log(isVerified)
+    
     if (isVerified) {
         let res = await addInPool(packet)
         return res
@@ -82,5 +82,8 @@ async function getTransactions()
     return getAllData(Pool)
 }
 
+async function removeTransaction(transaction){
+    await removeById(Pool,transaction._id)
+}
 
-module.exports = { createTransaction, verifyTransaction , getTransactions }
+module.exports = { createTransaction, verifyTransaction , getTransactions,removeTransaction }
