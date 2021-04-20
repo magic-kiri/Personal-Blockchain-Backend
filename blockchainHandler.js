@@ -9,6 +9,7 @@ const { sha256 } = require('js-sha256');
 const checkIntervalTime = 15
 const firstPhase = 25
 const blockDuration = 30 + firstPhase
+var readyToMine = false
 
 //// chache memory
 var optimalPacket = null
@@ -28,11 +29,11 @@ async function updateOptimalPacket(packet) {
         // const optimalIp = optimalPacket.block.limit
         if (limit < currentIp) {
             if ((optimalIp <= limit) || (currentIp < optimalIp))
-                optimalIp = packet
+                optimalPacket = packet
         }
         else {
             if (optimalIp < currentIp)
-                optimalIp = packet
+                optimalPacket = packet
         }
     }
 }
@@ -43,8 +44,12 @@ async function blockManager() {
     const timeDifferece = currentTime - consensusTime
     if (timeDifferece < firstPhase * 1000) {
         optimalPacket = null
+        readyToMine = true
+        return
     }
-    else if ((firstPhase * 1000 < timeDifferece) && (timeDifferece < blockDuration * 1000)) {
+    if (readyToMine == false) return
+    
+    if ((firstPhase * 1000 < timeDifferece) && (timeDifferece < blockDuration * 1000)) {
         // This is for block sharing 
         const myPacket = await createMyPacket()
         await updateOptimalPacket(myPacket)
@@ -53,7 +58,7 @@ async function blockManager() {
     else {
         const block = optimalPacket
         const transactions = block.transactions
-        if (0< transactions.length) {
+        if (0 < transactions.length) {
             console.log("Creating new Block: ")
             console.log(block)
             const res = await addBlock(block)
@@ -62,10 +67,9 @@ async function blockManager() {
             for (let txn of transactions)
                 await removeTransaction(txn)
             lastBlock = block
-           
+
         }
-        else
-        {
+        else {
             console.log(consensusTime)
             console.log("Not enough transaction!")
         }
@@ -124,7 +128,6 @@ async function init() {
     if (othersConsensusTime)
         setConsensusTime(othersConsensusTime)
     console.log('Consensus Time: ' + getConsensusTime())
-
 
 
     lastBlock = (await getUpdated()).body                  // loading last block
