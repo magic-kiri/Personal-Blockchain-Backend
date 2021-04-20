@@ -46,7 +46,10 @@ async function blockManager() {
     const currentTime = new Date()
     const timeDifferece = currentTime - consensusTime
     console.log(consensusTime)
-    
+
+    if( blockDuration*1000 < timeDifferece)
+        consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
+        
     if (timeDifferece < firstPhase * 1000) {
         console.log("Phase 1")
         optimalPacket = null
