@@ -60,18 +60,12 @@ async function appendBlockchain(targetChain, cnt = 3) {
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length - 1]
     // let previousHash = sha256(JSON.stringify(lastBlock))
-
+    console.log("trying to append!")
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
         lastBlock = sortJSON(lastBlock)
         let previousHash = sha256(JSON.stringify(lastBlock))
 
-        // if (previousHash != currentBlock.previousHash) {
-        //     console.log(previousHash)
-        //     console.log(currentBlock.previousHash)
-        //     console.log(currentBlock)
-        //     console.log(lastBlock)
-        // }
         if (previousHash == currentBlock.previousHash) {
             let res = await addBlock(currentBlock)
             if (res.statusCode != 200 && cnt > 0) {
@@ -84,7 +78,8 @@ async function appendBlockchain(targetChain, cnt = 3) {
             }
         }
         else {
-            return { statusCode: 409, body: "Block didnt matched: " + JSON.stringify(currentBlock) }
+            console.log('Error while appending chain!!!')
+            return { statusCode: 409, body: lastBlock }
         }
         lastBlock = currentBlock
     }
