@@ -24,9 +24,8 @@ console.log(new Date())
 
 
 async function updateOptimalPacket(packet) {
-    
-    if(optimalBlock.has(packet._id))
-    {
+
+    if (optimalBlock.has(packet._id)) {
         // console.log(lastBlock)
         let limit = lastBlock.limit
         const currentIp = packet.limit
@@ -38,18 +37,17 @@ async function updateOptimalPacket(packet) {
         console.log('currentIp: ' + currentIp)
         if (limit < currentIp) {
             if ((optimalIp <= limit) || (currentIp < optimalIp))
-            optimalBlock.set(packet._id,packet)
+                optimalBlock.set(packet._id, packet)
         }
         else {
-            if (optimalIp < currentIp || optimalIp == limit)
-            optimalBlock.set(packet._id,packet)
+            if ( currentIp<optimalIp && optimalIp<=limit)
+                optimalBlock.set(packet._id, packet)
         }
         console.log("After : ")
         console.log(optimalBlock.get(packet._id).limit)
     }
-    else
-    {
-        optimalBlock.set( packet._id , packet)
+    else {
+        optimalBlock.set(packet._id, packet)
     }
 }
 
@@ -64,7 +62,7 @@ async function sharingPhase() {
         // console.log(ownPacket)
         await updateOptimalPacket(ownPacket)
     }
-    propagatePacket(optimalBlock.get(lastBlock._id+1), `propose_block`)
+    propagatePacket(optimalBlock.get(lastBlock._id + 1), `propose_block`)
 }
 
 async function finalPhase() {
@@ -74,9 +72,9 @@ async function finalPhase() {
         lastBlock = sortJSON(lastBlock)
         return
     }
-    const block = optimalBlock.get(lastBlock._id+1)
+    const block = optimalBlock.get(lastBlock._id + 1)
     const transactions = block.transactions
-    optimalBlock.delete(lastBlock._id+1)
+    optimalBlock.delete(lastBlock._id + 1)
 
     if (0 < transactions.length) {
         console.log("Creating new Block: ")
@@ -96,8 +94,11 @@ async function finalPhase() {
 async function blockManager() {
     const currentTime = new Date()
     const timeDifferece = currentTime - consensusTime
+
     console.log(`Time Difference:: `)
     console.log(timeDifferece)
+    console.log(currentTime)
+    console.log(consensusTime)
 
     if ((timeDifferece < blockDuration * 1000)) {
         await sharingPhase()
