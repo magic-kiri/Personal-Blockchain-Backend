@@ -36,7 +36,7 @@ async function updateOptimalPacket(packet) {
             optimalBlock.set(packet._id,packet)
         }
         else {
-            if (optimalIp < currentIp || currentIp == limit)
+            if (optimalIp < currentIp || optimalIp == limit)
             optimalBlock.set(packet._id,packet)
         }
         console.log("After : ")
