@@ -2,6 +2,7 @@ const { sha256 } = require('js-sha256');
 const Block = require('./BlockModel');
 const { getAllData, getDataFromKey, addData, count } = require(`./dbMethod`);
 const { getAllChain } = require('./comunicator')
+const { getTransactions, removeTransaction } = require('./transactionHandler');
 
 
 async function validateChain() {
@@ -11,12 +12,8 @@ async function validateChain() {
     const chain = res.body
     for (i = 1; i < chain.length; i++) {
         chain[i-1] = sortJSON(chain[i-1])
-
-        if (sha256(JSON.stringify(chain[i-1])) != chain[i].previousHash) {
-            // console.log(chain[i - 1])
-            // console.log(sha256(JSON.stringify(chain[i - 1])))
+        if (sha256(JSON.stringify(chain[i-1])) != chain[i].previousHash)
             return false
-        }
     }
     return true
 }
@@ -68,6 +65,9 @@ async function appendBlockchain(targetChain, cnt = 3) {
 
         if (previousHash == currentBlock.previousHash) {
             let res = await addBlock(currentBlock)
+            let transactions  = currentBlock.transactions
+            for(let txn of transactions)
+                removeTransaction(txn)
             if (res.statusCode != 200 && cnt > 0) {
                 ////// WARNING ::: this may cause infinite loop
                 console.log("ERROR WITH DATABASE WHILE APPENDING BLOCK:")

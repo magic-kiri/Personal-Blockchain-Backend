@@ -8,7 +8,7 @@ const { sha256 } = require('js-sha256');
 
 const checkIntervalTime = 10
 
-const blockDuration = 80
+const blockDuration = 120
 
 var optimalBlock = new Map()
 
