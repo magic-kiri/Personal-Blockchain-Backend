@@ -1,14 +1,8 @@
-// const http = require('http');
 
-// const hostname = '0.0.0.0';
-// const port = 8080;
+let  my = new Map()
 
-// const server = http.createServer((req, res) => {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.end('Hello World');
-// });
 
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
+my.set(1,{_id: 7,'ek': 2})
+my.set(1,{_id: 5,'ek': 2})
+
+console.log(my.get(1))

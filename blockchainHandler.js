@@ -10,39 +10,41 @@ const checkIntervalTime = 10
 
 const blockDuration = 80
 
+var optimalBlock = new Map()
 
 //// chache memory
 var ownPacket = null
-var optimalPacket = null
 var lastBlock = null
 var cntShare = 0
 var consensusTime = new Date()
 ///////////////////
 async function updateOptimalPacket(packet) {
-    if (optimalPacket == null)
-        optimalPacket = packet
-    else {
+    
+    if(optimalBlock.has(packet._id))
+    {
         // console.log(lastBlock)
         let limit = lastBlock.limit
         const currentIp = packet.limit
-        const optimalIp = optimalPacket.limit
-
+        const optimalIp = optimalBlock.get(packet._id).limit
         // const currentIp = packet.block.limit
         // const optimalIp = optimalPacket.block.limit
-
         console.log(limit)
         console.log('optimalIp: ' + optimalIp)
         console.log('currentIp: ' + currentIp)
         if (limit < currentIp) {
             if ((optimalIp <= limit) || (currentIp < optimalIp))
-                optimalPacket = packet
+            optimalBlock.set(packet._id,packet)
         }
         else {
             if (optimalIp < currentIp || currentIp == limit)
-                optimalPacket = packet
+            optimalBlock.set(packet._id,packet)
         }
         console.log("After : ")
-        console.log(optimalPacket.limit)
+        console.log(optimalBlock.get(packet._id).limit)
+    }
+    else
+    {
+        optimalBlock.set( packet._id , packet)
     }
 }
 
@@ -54,10 +56,10 @@ async function sharingPhase() {
     if (ownPacket == null) {
         ownPacket = await createMyPacket()
         console.log(`OWN PACKET:  \n"`)
-        console.log(ownPacket)
+        // console.log(ownPacket)
         await updateOptimalPacket(ownPacket)
     }
-    propagatePacket(optimalPacket, `propose_block`)
+    propagatePacket(optimalBlock.get(lastBlock._id+1), `propose_block`)
 }
 
 async function finalPhase() {
@@ -67,8 +69,10 @@ async function finalPhase() {
         lastBlock = sortJSON(lastBlock)
         return
     }
-    const block = optimalPacket
+    const block = optimalBlock.get(lastBlock._id+1)
     const transactions = block.transactions
+    optimalBlock.delete(lastBlock._id+1)
+
     if (0 < transactions.length) {
         console.log("Creating new Block: ")
         console.log(block)
@@ -98,7 +102,7 @@ async function blockManager() {
         await finalPhase()
         cntShare = 0
         ownPacket = null
-        optimalPacket = null
+        optimalBlock.delete(lastBlock._id)
     }
 }
 
@@ -106,6 +110,7 @@ async function createMyPacket() {
     try {
         const res = await getTransactions()
         const transactions = res.body
+        console.log(JSON.stringify(transactions))
         lastBlock = sortJSON(lastBlock)
         const block = {
             transactions: transactions,
