@@ -8,7 +8,7 @@ const { sha256 } = require('js-sha256');
 
 const checkIntervalTime = 10
 
-const blockDuration = 70
+const blockDuration = 80
 
 
 //// chache memory
@@ -50,7 +50,7 @@ async function updateOptimalPacket(packet) {
 async function sharingPhase() {
     // This is for block sharing
     cntShare++
-    console.log("Phase 2")
+    console.log("Phase 1")
     if (ownPacket == null) {
         ownPacket = await createMyPacket()
         console.log(`OWN PACKET:  \n"`)
@@ -61,12 +61,12 @@ async function sharingPhase() {
 }
 
 async function finalPhase() {
+    console.log("Phase 2")
     if (cntShare < 3) {
         lastBlock = (await getUpdated()).body
         lastBlock = sortJSON(lastBlock)
         return
     }
-    console.log("Phase 3")
     const block = optimalPacket
     const transactions = block.transactions
     if (0 < transactions.length) {
@@ -87,7 +87,7 @@ async function finalPhase() {
 async function blockManager() {
     const currentTime = new Date()
     const timeDifferece = currentTime - consensusTime
-    // console.log(consensusTime)
+    console.log(`Time Difference:: `)
     console.log(timeDifferece)
 
     if ((timeDifferece < blockDuration * 1000)) {
