@@ -39,9 +39,11 @@ async function updateOptimalPacket(packet) {
                 optimalPacket = packet
         }
         else {
-            if (optimalIp < currentIp)
+            if (optimalIp < currentIp || currentIp ==limit)
                 optimalPacket = packet
         }
+        console.log("After : " )
+        console.log(optimalPacket.limit)
     }
 }
 
