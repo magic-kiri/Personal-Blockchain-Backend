@@ -53,6 +53,8 @@ async function sharingPhase() {
     console.log("Phase 2")
     if (ownPacket == null) {
         ownPacket = await createMyPacket()
+        console.log(`OWN PACKET:  \n"`)
+        console.log(ownPacket)
         await updateOptimalPacket(ownPacket)
     }
     propagatePacket(optimalPacket, `propose_block`)
