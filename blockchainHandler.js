@@ -1,22 +1,21 @@
 
 
 const { searchForConsensus, propagatePacket, getOwnIp } = require('./comunicator');
-const { addBlock, getUpdated, validateChain, getChainLength, sortJSON } = require('./blockRoutes');
+const { addBlock, getUpdated, validateChain, sortJSON } = require('./blockRoutes');
 const { getTransactions, removeTransaction } = require('./transactionHandler');
 const { sha256 } = require('js-sha256');
 
 
 const checkIntervalTime = 10
-const firstPhase = 50
-const blockDuration = 35 + firstPhase
 
-var readyToMine = false
+const blockDuration = 70
 
 
 //// chache memory
 var ownPacket = null
 var optimalPacket = null
 var lastBlock = null
+var cntShare = 0
 var consensusTime = new Date()
 ///////////////////
 async function updateOptimalPacket(packet) {
@@ -39,23 +38,18 @@ async function updateOptimalPacket(packet) {
                 optimalPacket = packet
         }
         else {
-            if (optimalIp < currentIp || currentIp ==limit)
+            if (optimalIp < currentIp || currentIp == limit)
                 optimalPacket = packet
         }
-        console.log("After : " )
+        console.log("After : ")
         console.log(optimalPacket.limit)
     }
 }
 
 
-function phaseOne() {
-    console.log("Phase 1")
-    readyToMine = true
-    return
-}
-
-async function phaseTwo() {
+async function sharingPhase() {
     // This is for block sharing
+    cntShare++
     console.log("Phase 2")
     if (ownPacket == null) {
         ownPacket = await createMyPacket()
@@ -64,27 +58,28 @@ async function phaseTwo() {
     propagatePacket(optimalPacket, `propose_block`)
 }
 
-async function phaseThree() {
+async function finalPhase() {
+    if (cntShare < 3) {
+        lastBlock = (await getUpdated()).body
+        lastBlock = sortJSON(lastBlock)
+        return
+    }
     console.log("Phase 3")
     const block = optimalPacket
     const transactions = block.transactions
     if (0 < transactions.length) {
         console.log("Creating new Block: ")
         console.log(block)
-        await addBlock(block)
+        addBlock(block)                         // Async function
         console.log('New Block Created')
         lastBlock = block
         for (let txn of transactions)
-            await removeTransaction(txn)
-        
+            removeTransaction(txn)              // Async function
     }
     else {
         console.log(consensusTime)
         console.log("Not enough transaction!")
     }
-    readyToMine = false
-    ownPacket = null
-    optimalPacket = null
 }
 
 async function blockManager() {
@@ -92,25 +87,18 @@ async function blockManager() {
     const timeDifferece = currentTime - consensusTime
     // console.log(consensusTime)
     console.log(timeDifferece)
-    if (blockDuration * 1000 < timeDifferece)
-        consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
 
-    if (timeDifferece < firstPhase * 1000) {
-        phaseOne()
-        return
-    }
-    if (readyToMine == false) 
-        return
-
-    if ((firstPhase * 1000 < timeDifferece) && (timeDifferece < blockDuration * 1000)) {
-        await phaseTwo()
+    if ((timeDifferece < blockDuration * 1000)) {
+        await sharingPhase()
     }
     else {
-        await phaseThree()
+        consensusTime.setSeconds(consensusTime.getSeconds() + blockDuration)
+        await finalPhase()
+        cntShare = 0
+        ownPacket = null
+        optimalPacket = null
     }
 }
-
-
 
 async function createMyPacket() {
     try {
