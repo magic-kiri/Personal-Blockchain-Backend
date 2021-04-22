@@ -18,6 +18,11 @@ var lastBlock = null
 var cntShare = 0
 var consensusTime = new Date()
 ///////////////////
+
+console.log('Device Start Time: ')
+console.log(new Date())
+
+
 async function updateOptimalPacket(packet) {
     
     if(optimalBlock.has(packet._id))
