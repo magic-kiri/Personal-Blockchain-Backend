@@ -25,6 +25,7 @@ This will work only in a LAN.
 ## Launch:
 1) Run `monogo.exe` file from `MongoDB\Server\4.4\bin\`
 2) Go to the project directory and run it using `node app.js`
+3) For better usage, you can use a frontend app [Personal Blockchain Frontend](https://github.com/arBishal/Personal-Blockchain-Frontend)
 
 
 ## Mechanism
@@ -34,7 +35,7 @@ One can run this app in his/her local machine and log-In/sign-Up using API.
 After signing-In user can send a POST request to the server to save an **Transaction**. 
 The server propagtes the transaction to all other active nodes in the network.
 Every active node in the network verifies the transaction with the help of digital signature and 
-if it is valid then the server will insert the transaction in its own **Transaction Pool**.
+if it is valid then the server will insert the transaction in its own <b> Transaction Pool </b>.
 
 For a certain period of time every active node in the network creates an block and share it to each other.
 After the time period every node gets the optimal block and they append it in thein blockchain.
