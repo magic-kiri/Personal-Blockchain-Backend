@@ -1,6 +1,6 @@
 
 
-const { searchForConsensus, propagatePacket, getOwnIp } = require('./comunicator');
+const { searchForConsensus, propagatePacket, getOwnIp } = require('./communicator');
 const { addBlock, getUpdated, validateChain, sortJSON } = require('./blockRoutes');
 const { getTransactions, removeTransaction } = require('./transactionHandler');
 const { sha256 } = require('js-sha256');
@@ -19,8 +19,8 @@ var cntShare = 0
 var consensusTime = new Date()
 ///////////////////
 
-console.log('Device Start Time: ')
-console.log(new Date())
+// console.log('Device Start Time: ')
+// console.log(new Date())
 
 
 async function updateOptimalPacket(packet) {
@@ -32,9 +32,9 @@ async function updateOptimalPacket(packet) {
         const optimalIp = optimalBlock.get(packet._id).limit
         // const currentIp = packet.block.limit
         // const optimalIp = optimalPacket.block.limit
-        console.log(limit)
-        console.log('optimalIp: ' + optimalIp)
-        console.log('currentIp: ' + currentIp)
+        // console.log(limit)
+        // console.log('optimalIp: ' + optimalIp)
+        // console.log('currentIp: ' + currentIp)
         if (limit < currentIp) {
             if ((optimalIp <= limit) || (currentIp < optimalIp))
                 optimalBlock.set(packet._id, packet)
@@ -43,8 +43,8 @@ async function updateOptimalPacket(packet) {
             if ( currentIp<optimalIp && optimalIp<=limit)
                 optimalBlock.set(packet._id, packet)
         }
-        console.log("After : ")
-        console.log(optimalBlock.get(packet._id).limit)
+        // console.log("After : ")
+        // console.log(optimalBlock.get(packet._id).limit)
     }
     else {
         optimalBlock.set(packet._id, packet)
@@ -55,10 +55,10 @@ async function updateOptimalPacket(packet) {
 async function sharingPhase() {
     // This is for block sharing
     cntShare++
-    console.log("Phase 1")
+    // console.log("Phase 1")
     if (ownPacket == null) {
         ownPacket = await createMyPacket()
-        console.log(`OWN PACKET:  \n"`)
+        // console.log(`OWN PACKET:  \n"`)
         // console.log(ownPacket)
         await updateOptimalPacket(ownPacket)
     }
@@ -66,7 +66,7 @@ async function sharingPhase() {
 }
 
 async function finalPhase() {
-    console.log("Phase 2")
+    // console.log("Phase 2")
     if (cntShare < 3) {
         lastBlock = (await getUpdated()).body
         lastBlock = sortJSON(lastBlock)
@@ -95,10 +95,10 @@ async function blockManager() {
     const currentTime = new Date()
     const timeDifferece = currentTime - consensusTime
 
-    console.log(`Time Difference:: `)
-    console.log(timeDifferece)
-    console.log(currentTime)
-    console.log(consensusTime)
+    // console.log(`Time Difference:: `)
+    // console.log(timeDifferece)
+    // console.log(currentTime)
+    // console.log(consensusTime)
 
     if ((timeDifferece < blockDuration * 1000)) {
         await sharingPhase()
@@ -116,7 +116,7 @@ async function createMyPacket() {
     try {
         const res = await getTransactions()
         const transactions = res.body
-        console.log(JSON.stringify(transactions))
+        // console.log(JSON.stringify(transactions))
         lastBlock = sortJSON(lastBlock)
         const block = {
             transactions: transactions,
@@ -142,7 +142,7 @@ async function proposePacket(packet) {
 
 async function init() {
     let othersConsensusTime = await searchForConsensus()    // searching for consesus time 
-    console.log(othersConsensusTime)
+    // console.log(othersConsensusTime)
     if (othersConsensusTime) {
         setConsensusTime(new Date(othersConsensusTime))
     }

@@ -8,7 +8,7 @@ const accountHandler = require('./accountHandler')
 const transactionHandler = require('./transactionHandler')
 const blockchainHandler = require('./blockchainHandler');
 const blockRoutes = require('./blockRoutes')
-const comunicator = require('./comunicator')
+const comunicator = require('./communicator')
 const { Account } = require('./account')
 
 

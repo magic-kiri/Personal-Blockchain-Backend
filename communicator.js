@@ -32,7 +32,7 @@ function addIpAddress(json) {
 }
 
 async function discoverliveHosts() {
-    console.log("Discovering : ")
+    // console.log("Discovering : ")
     liveHosts.clear();
     addressList.forEach((ip) => isNodeAlive(ip))
 }

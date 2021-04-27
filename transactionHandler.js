@@ -2,7 +2,7 @@
 
 const { getAllData, getDataFromKey, addData ,removeById} = require(`./dbMethod`);
 var Pool = require('./transactionModel')
-const { propagatePacket } = require('./comunicator');
+const { propagatePacket } = require('./communicator');
 const { CryptoSecurity } = require("./security");
 const { sha256 } = require('js-sha256');
 

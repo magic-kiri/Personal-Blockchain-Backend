@@ -1,7 +1,7 @@
 const { sha256 } = require('js-sha256');
 const Block = require('./BlockModel');
 const { getAllData, getDataFromKey, addData, count } = require(`./dbMethod`);
-const { getAllChain } = require('./comunicator')
+const { getAllChain } = require('./communicator')
 const { getTransactions, removeTransaction } = require('./transactionHandler');
 
 
@@ -57,7 +57,7 @@ async function appendBlockchain(targetChain, cnt = 3) {
     let currentChain = response.body
     let lastBlock = currentChain[currentChain.length - 1]
     // let previousHash = sha256(JSON.stringify(lastBlock))
-    console.log("trying to append!")
+    // console.log("trying to append!")
     for (i = currentChain.length; i < targetChain.length; i++) {
         let currentBlock = targetChain[i]
         lastBlock = sortJSON(lastBlock)
