@@ -91,7 +91,7 @@ async function getAllChain(len) {
 
 async function comunicatorLoader() {
     // Setting own IP address
-    for (i = 100; i < 110; i++) {
+    for (i = 100; i <= 120; i++) {
         ip = ownIpAddress.substring(0, ownIpAddress.length - 3)
         addressList.push(ip + i)
     }

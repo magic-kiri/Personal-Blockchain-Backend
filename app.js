@@ -103,6 +103,11 @@ app.get('/is_log_in', (req, res) => {
 // Returns a string as response
 app.post('/sign_up', async (req, res) => {
     const response = await accountHandler.signUp(req.body.username, req.body.password)
+    if (response.statusCode == 200) {
+        const account = response.body
+        loggedAccount = new Account(account.username, account.passHash, account.publicKey, account.encryptedPrivateKey, account.timestamp)
+        userPassword = req.body.password
+    }
     res.status(response.statusCode).json(response.body)
 })
 
