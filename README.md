@@ -19,13 +19,13 @@ This will work only in a LAN.
 
 1) Install [NodeJS](https://nodejs.org/en/download/) on your local machine.
 2) Install [MongoDB](https://www.mongodb.com/try/download/community) for Database access.
-3) Clone the repository with `git clone https://github.com/magic-kiri/Personal-Blockchian.git` the command (for windows users) in the current directory.
+3) Clone the repository with `git clone https://github.com/magic-kiri/Personal-Blockchian.git` command (for windows users) in the current directory.
 4) In the project directory use `npm install` command to install all the dependecies.
 
 ## Launch
 1) Run `monogo.exe` file from `MongoDB\Server\4.4\bin\`
 2) Go to the project directory and run it using `node app.js`
-3) For better usage, you can use a frontend app [Personal Blockchain Frontend](https://github.com/arBishal/Personal-Blockchain-Frontend)
+3) For better usage, you can use a frontend web-app [Personal Blockchain Frontend](https://github.com/arBishal/Personal-Blockchain-Frontend)
 
 #### Warning
 1) Make sure the subnet musk of the network is 255.255.255.0
